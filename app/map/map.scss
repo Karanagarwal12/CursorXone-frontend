@@ -1,0 +1,33 @@
+#map {
+  background-color: #2222228a;
+  border: 2px solid black;
+  border-radius: 50%;
+  position: absolute;
+  bottom: 1%;
+  right: 1%;
+  height: 15vh;
+  width: 15vh;
+  & > .close {
+    height: 100px;
+    width: 100px;
+    background: url("../../assets/closeBtn.png") no-repeat center;
+    background-size: contain;
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    border-radius: 50%;
+    display: none;
+  }
+  & > #allCursPos {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    & > .otherCursorMap {
+      height: 50px;
+      width: 50px;
+      position: absolute;
+      background: url("../../assets/cursor01.png") no-repeat;
+      background-size: contain;
+    }
+  }
+}

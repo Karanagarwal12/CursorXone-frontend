@@ -11,10 +11,18 @@
 
 html,
 body {
-  color: #fff;
-  height: 10800px;
-  width: 19200px;
+  background-color: #ee1771;
+  height: 100%;
+  width: 100%;
   /* overflow: hidden; */
+}
+
+.home{
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .playground {

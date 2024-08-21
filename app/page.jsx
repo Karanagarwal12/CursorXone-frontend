@@ -6,11 +6,9 @@ import { io } from 'socket.io-client';
 import './cursors/cursor.scss';
 import './playground.scss';
 import CanvasBg from './canvasBg/CanvasBg';
+import { Suspense } from 'react';
 
-// import Cursor from './cursors/Cursor';
-
-
-export default function Home() {
+function Page() {
   const cur = useRef();
   const outer = useRef();
 
@@ -161,5 +159,13 @@ export default function Home() {
         <div className="csr" ref={cur}></div>
       </div>
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <Page />
+    </Suspense>
   );
 }

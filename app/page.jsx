@@ -66,7 +66,7 @@ function Page() {
   }
   useEffect(() => {
     // const socketInstance = io('http://192.168.127.96:5000');
-    const socketInstance = io('http://192.168.231.50:5000');
+    const socketInstance = io('https://1895-2409-40e3-9-48ea-e63c-51b8-a76f-88ef.ngrok-free.app');
     // const socketInstance = io('http://192.168.18.96:5000');
     // const socketInstance = io('http://172.70.100.243:5000');
 

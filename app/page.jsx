@@ -66,7 +66,7 @@ function Page() {
   }
   useEffect(() => {
     // const socketInstance = io('http://192.168.127.96:5000');
-    const socketInstance = io('http://192.168.231.50:5000');
+    const socketInstance = io('https://cursor-xone-backend.vercel.app:5000');
     // const socketInstance = io('http://192.168.18.96:5000');
     // const socketInstance = io('http://172.70.100.243:5000');
 

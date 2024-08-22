@@ -19,7 +19,7 @@ export default function Home() {
     setError(null);
 
     try {
-      const response = await axios.post('https://1895-2409-40e3-9-48ea-e63c-51b8-a76f-88ef.ngrok-free.app/users/auth/signup', {
+      const response = await axios.post('http://103.127.29.124:3000/users/auth/signup', {
         name,
         email,
         password,
@@ -36,7 +36,7 @@ export default function Home() {
     setError(null);
 
     try {
-      const response = await axios.post('https://1895-2409-40e3-9-48ea-e63c-51b8-a76f-88ef.ngrok-free.app/users/auth/login', {
+      const response = await axios.post('http://103.127.29.124:3000/users/auth/login', {
         email,
         password,
       });

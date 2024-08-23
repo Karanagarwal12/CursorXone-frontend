@@ -7,20 +7,30 @@ import '../cursors/cursor.scss';
 import './playground.scss';
 import CanvasBg from '../canvasBg/CanvasBg';
 import { Suspense } from 'react';
+import { useUserContext } from '../context/UserContext';
 
 function Page() {
 
   const cur = useRef();
   const outer = useRef();
+  const { user } = useUserContext();
 
   const roomId = '123456';
   const router = useRouter();
-  const searchpara = useSearchParams();
-  const username = searchpara.get('username');
 
   const [socket, setSocket] = useState(null);
   const [clients, setClients] = useState([]);
   const myCursor = { x: 0, y: 0 };
+
+  useEffect(() => {
+    if (!user) {
+      router.push('/'); 
+    }
+  }, [user, router]);
+  if (!user) {
+    return <p>Loading...</p>;
+  }
+  const username = user?.name;
   // useEffect(() => {
   //   console.log(cursors);
   // }, [cursors])
@@ -71,7 +81,7 @@ function Page() {
     // const socketInstance = io('http://192.168.18.96:5000');
     // const socketInstance = io('http://172.70.100.243:5000');
 
-    
+
     const mapParent = document.querySelector('#allCursPos');
     setSocket(socketInstance);
 
@@ -142,23 +152,28 @@ function Page() {
     document.addEventListener('contextmenu', (event) => {
       event.preventDefault();
     });
-    
+
   }, []);
 
   return (
+
     <div className="playground">
-      <CanvasBg/>
-      <div className="allCursors" ref={allMouse}></div>
-      <div
-        className="outer"
-        ref={outer}
-        onMouseEnter={() => (cur.current.style.display = 'block')}
-        onMouseLeave={() => (cur.current.style.display = 'none')}
-        onMouseMove={(e) => (cur.current.style.transform = `translate(${e.clientX - 17}px, ${e.clientY - 40}px)`)}
-      >
-        <Mapp />
-        <div className="csr" ref={cur}></div>
-      </div>
+      {user &&
+        <>
+          <CanvasBg />
+          <div className="allCursors" ref={allMouse}></div>
+          <div
+            className="outer"
+            ref={outer}
+            onMouseEnter={() => (cur.current.style.display = 'block')}
+            onMouseLeave={() => (cur.current.style.display = 'none')}
+            onMouseMove={(e) => (cur.current.style.transform = `translate(${e.clientX - 17}px, ${e.clientY - 40}px)`)}
+          >
+            <Mapp />
+            <div className="csr" ref={cur}></div>
+          </div>
+        </>
+      }
     </div>
   );
 }

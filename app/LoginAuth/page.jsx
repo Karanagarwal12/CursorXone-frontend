@@ -1,16 +1,20 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useUserContext } from '../context/UserContext';
 import axios from 'axios';
 import './login.scss';
+
 // Importing images from the assets folder
 import defaultImage1 from '../../assets/cursor01.png';
+// Add more images if needed
 // import defaultImage2 from '../public/assets/default2.png';
 // import defaultImage3 from '../public/assets/default3.png';
 
 export default function Home() {
   const router = useRouter();
+  const { user, setUser } = useUserContext();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -22,14 +26,17 @@ export default function Home() {
 
   const defaultImages = [defaultImage1];
 
-  
   const handleImageChange = (e) => {
     setImage(e.target.files[0]);
     setImageError(null);
   };
 
-  const handleDefaultImageSelect = (imagePath) => {
-    setImage(imagePath);
+  const handleDefaultImageSelect = async (imagePath) => {
+    // Convert default image to base64
+    const base64Image = await fetch(imagePath)
+      .then((res) => res.blob())
+      .then((blob) => convertToBase64(blob));
+    setImage(base64Image);
     setImageError(null);
   };
 
@@ -43,22 +50,11 @@ export default function Home() {
     }
 
     try {
-      let base64Image = '';
-
-      // Check if the image is a string (default image) or a File object (uploaded image)
-      if (typeof image === 'string') {
-        base64Image = await fetch(image)
-          .then((res) => res.blob())
-          .then((blob) => convertToBase64(blob));
-      } else {
-        base64Image = await convertToBase64(image);
-      }
-
-      const response = await axios.post('http://172.70.101.255:3000/users/auth/signup', {
+      const response = await axios.post('http://localhost:8080/users/auth/signup', {
         name,
         email,
         password,
-        image: base64Image,
+        image,
       });
 
       alert('User signed up successfully');
@@ -73,16 +69,22 @@ export default function Home() {
     setError(null);
 
     try {
-      const response = await axios.post('http://172.70.101.255:3000/users/auth/login', {
+      const response = await axios.post('http://localhost:8080/users/auth/login', {
         email,
         password,
       });
-      console.log(response);
-      router.push(`/playground/?username=${response.data.body.name}`);
+      const userDetails = response.data.body;
+      setUser(userDetails);
     } catch (err) {
       setError(err.response?.data?.message || 'An error occurred');
     }
   };
+  useEffect(() => {
+    if (user) {
+      router.push('/playground'); // Redirect if user is set
+    }
+  }, [user, router]);
+
   const convertToBase64 = (file) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -94,7 +96,6 @@ export default function Home() {
 
   return (
     <div className="login-signup">
-
       <h2>{isLogin ? 'Login' : 'Signup'}</h2>
       <form onSubmit={isLogin ? handleLogin : handleSignup}>
         {!isLogin && (

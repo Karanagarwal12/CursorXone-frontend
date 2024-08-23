@@ -55,7 +55,7 @@ export default function Home() {
     }
 
     try {
-      const response = await axios.post('http://192.168.112.97:8080/users/auth/signup', {
+      const response = await axios.post('http://103.209.145.248:3000/users/auth/signup', {
         name,
         email,
         password,
@@ -74,7 +74,7 @@ export default function Home() {
     setError(null);
 
     try {
-      const response = await axios.post('http://192.168.112.97:8080/users/auth/login', {
+      const response = await axios.post('http://103.209.145.248:3000/users/auth/login', {
         email,
         password,
       });

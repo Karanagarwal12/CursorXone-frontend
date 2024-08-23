@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Mapp from '../map/Map';
+import Profile from '../profile/Profile';
 import { io } from 'socket.io-client';
 import '../cursors/cursor.scss';
 import './playground.scss';
@@ -9,11 +10,12 @@ import CanvasBg from '../canvasBg/CanvasBg';
 import { Suspense } from 'react';
 import { useUserContext } from '../context/UserContext';
 
+
 function Page() {
 
   const cur = useRef();
   const outer = useRef();
-  const { user } = useUserContext();
+  const { user, setUser } = useUserContext();
 
   const roomId = '123456';
   const router = useRouter();
@@ -22,18 +24,27 @@ function Page() {
   const [clients, setClients] = useState([]);
   const myCursor = { x: 0, y: 0 };
 
+
+  let localUser = null;
   useEffect(() => {
-    if (!user) {
-      router.push('/'); 
+    localUser = localStorage.getItem('userD');
+    localUser = JSON.parse(localUser);
+    if (localUser) {
+      setUser(localUser);
+    } else {
+      if (!user) {
+        router.push('/');
+      }
     }
-  }, [user, router]);
-  if (!user) {
+  }, [router]);
+  if (!user && !localUser) {
     return <p>Loading...</p>;
   }
-  const username = user?.name;
-  // useEffect(() => {
-  //   console.log(cursors);
-  // }, [cursors])
+
+
+  const username = user?.name || localUser?.name;
+
+  const curImg = user?.currentimage || localUser?.currentimage;
   const allMouse = useRef();
   const allMouseMove = (e) => {
     let childElementMap = e.mapParent.querySelector(`#${e.username}`);
@@ -44,9 +55,10 @@ function Page() {
       childElementMap.style.left = `${(e.cursorPos.x - 17) * 8 / 100}px`;
     } else {
       // If the child doesn't exist, create a new element
-      childElementMap = document.createElement('div');
+      childElementMap = document.createElement('img');
       childElementMap.id = e.username;
       childElementMap.className = 'otherCursorMap';
+      childElementMap.src = curImg;
 
       // Apply the styles to the new element
       childElementMap.style.top = `${(e.cursorPos.y - 40) * 8 / 100}px`;
@@ -77,7 +89,7 @@ function Page() {
   }
   useEffect(() => {
     // const socketInstance = io('http://192.168.127.96:5000');
-    const socketInstance = io('http://103.127.29.124:3000/');
+    const socketInstance = io('http://192.168.112.97:8080');
     // const socketInstance = io('http://192.168.18.96:5000');
     // const socketInstance = io('http://172.70.100.243:5000');
 
@@ -94,6 +106,12 @@ function Page() {
       console.log(`${username} left the room`);
       setClients(prev => prev.filter(user => user !== username));
       setCursorPositions(prevPositions => prevPositions.filter(item => item.username !== username));
+      socketInstance.emit('connected-users', clients);
+    });
+    socketInstance.on('user-joined', (username) => {
+      console.log(`${username} joined the room`);
+      // setClients(prev => prev.filter(user => user !== username));
+      // setCursorPositions(prevPositions => prevPositions.filter(item => item.username !== username));
       socketInstance.emit('connected-users', clients);
     });
 
@@ -152,8 +170,8 @@ function Page() {
     document.addEventListener('contextmenu', (event) => {
       event.preventDefault();
     });
-
   }, []);
+
 
   return (
 
@@ -169,8 +187,13 @@ function Page() {
             onMouseLeave={() => (cur.current.style.display = 'none')}
             onMouseMove={(e) => (cur.current.style.transform = `translate(${e.clientX - 17}px, ${e.clientY - 40}px)`)}
           >
-            <Mapp />
-            <div className="csr" ref={cur}></div>
+            <div className="front">
+              <Profile user={user || localUser} />
+              <div className="mapCover">
+                <Mapp />
+              </div>
+            </div>
+            <img className="csr" src={curImg} ref={cur} />
           </div>
         </>
       }

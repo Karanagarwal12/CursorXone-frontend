@@ -1,7 +1,9 @@
 import { useRef } from 'react';
 import './map.scss';
+import { useUserContext } from '../context/UserContext';
 
 export default function Map() {
+    const {user} = useUserContext();
     const map = useRef();
     const mapCloseBtn = useRef();
 

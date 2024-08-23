@@ -27,8 +27,13 @@ export default function Home() {
   const defaultImages = [defaultImage1];
 
   const handleImageChange = (e) => {
-    setImage(e.target.files[0]);
-    setImageError(null);
+    // Convert the selected file to base64 and set it in the state
+    convertToBase64(e.target.files[0]).then(base64 => {
+      setImage(base64);
+      setImageError(null);
+    }).catch(() => {
+      setImageError('Failed to convert image to base64');
+    });
   };
 
   const handleDefaultImageSelect = async (imagePath) => {
@@ -50,7 +55,7 @@ export default function Home() {
     }
 
     try {
-      const response = await axios.post('http://localhost:8080/users/auth/signup', {
+      const response = await axios.post('http://192.168.112.97:8080/users/auth/signup', {
         name,
         email,
         password,
@@ -69,21 +74,24 @@ export default function Home() {
     setError(null);
 
     try {
-      const response = await axios.post('http://localhost:8080/users/auth/login', {
+      const response = await axios.post('http://192.168.112.97:8080/users/auth/login', {
         email,
         password,
       });
       const userDetails = response.data.body;
+      console.log(response.data.body);
       setUser(userDetails);
     } catch (err) {
       setError(err.response?.data?.message || 'An error occurred');
     }
   };
   useEffect(() => {
-    if (user) {
-      router.push('/playground'); // Redirect if user is set
+    let localUser = localStorage.getItem('userD');
+    if (localUser) {
+      localUser = JSON.parse(localUser);
+      router.push('/playground');
     }
-  }, [user, router]);
+  }, [router]); // Only include router as a dependency
 
   const convertToBase64 = (file) => {
     return new Promise((resolve, reject) => {

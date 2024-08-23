@@ -9,6 +9,7 @@ import './playground.scss';
 import CanvasBg from '../canvasBg/CanvasBg';
 import { Suspense } from 'react';
 import { useUserContext } from '../context/UserContext';
+import Image from 'next/image';
 
 
 function Page() {
@@ -25,26 +26,23 @@ function Page() {
   const myCursor = { x: 0, y: 0 };
 
 
-  let localUser = null;
+  const localUserRef = useRef(null);
   useEffect(() => {
-    localUser = localStorage.getItem('userD');
-    localUser = JSON.parse(localUser);
-    if (localUser) {
-      setUser(localUser);
+    localUserRef.current = localStorage.getItem('userD');
+    if (localUserRef.current) {
+      const parsedUser = JSON.parse(localUserRef.current);
+      setUser(parsedUser);
     } else {
       if (!user) {
         router.push('/');
       }
     }
   }, [router]);
-  if (!user && !localUser) {
-    return <p>Loading...</p>;
-  }
 
 
-  const username = user?.name || localUser?.name;
+  const username = user?.name || localUserRef.current?.name;
 
-  const curImg = user?.currentimage || localUser?.currentimage;
+  const curImg = user?.currentimage || localUserRef.current?.currentimage;
   const allMouse = useRef();
   const allMouseMove = (e) => {
     let childElementMap = e.mapParent.querySelector(`#${e.username}`);
@@ -176,7 +174,7 @@ function Page() {
   return (
 
     <div className="playground">
-      {user &&
+      {(user || localUserRef.current) &&
         <>
           <CanvasBg />
           <div className="allCursors" ref={allMouse}></div>
@@ -188,12 +186,19 @@ function Page() {
             onMouseMove={(e) => (cur.current.style.transform = `translate(${e.clientX - 17}px, ${e.clientY - 40}px)`)}
           >
             <div className="front">
-              <Profile user={user || localUser} />
+              <Profile user={user || localUserRef.current} />
               <div className="mapCover">
                 <Mapp />
               </div>
             </div>
-            <img className="csr" src={curImg} ref={cur} />
+            <Image
+              className="csr"
+              src={curImg}
+              alt="Cursor Image"
+              width={100}
+              height={100}
+              ref={cur}
+            />
           </div>
         </>
       }

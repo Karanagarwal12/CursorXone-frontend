@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
 import './profile.scss';
 
 export default function Profile(user) {
@@ -11,9 +12,14 @@ export default function Profile(user) {
         <div id="profile" ref={profile} onClick={handleClick}>
             {isOpened &&
                 <div className="inner">
-                    
-                </div> || 
-                <img src={user?.user?.currentimage} alt="cursorImage" />
+
+                </div> ||
+                <Image
+                    src={user?.user?.currentimage}
+                    alt="Profile Image"
+                    width={100}
+                    height={100}
+                />
             }
         </div>
     )

@@ -5,6 +5,19 @@
   position: relative;
   background-color: #021027;
 
+  .allCursors {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    .otherCursor {
+      height: 100px;
+      width: 100px;
+      position: absolute;
+      background: url("../../assets/cursor01.png") no-repeat;
+      background-size: contain;
+      pointer-events: none;
+    }
+  }
   .csr {
     height: 100px;
     width: 100px;
@@ -18,7 +31,7 @@
     width: 100vw;
     cursor: none;
     position: fixed;
-    .front{
+    .front {
       height: 100%;
       width: 100%;
       position: absolute;

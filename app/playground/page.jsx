@@ -25,6 +25,10 @@ function Page() {
 
   const myCursor = { x: 0, y: 0 };
 
+  const username = user?.name || localUserRef.current?.name;
+
+  const curImg = user?.currentimage || localUserRef.current?.currentimage;
+  const allMouse = useRef();
 
   const localUserRef = useRef(null);
   useEffect(() => {
@@ -39,14 +43,7 @@ function Page() {
     }
   }, [router]);
 
-  if (!localUserRef.current && !user) {
-    return <div>Loading...</div>
-  }
 
-  const username = user?.name || localUserRef.current?.name;
-
-  const curImg = user?.currentimage || localUserRef.current?.currentimage;
-  const allMouse = useRef();
   const allMouseMove = (e) => {
     let childElementMap = e.mapParent.querySelector(`#${e.username}`);
     // cursors.set(e.username, e.cursorPos);
@@ -175,6 +172,9 @@ function Page() {
   }, []);
 
 
+  if (!localUserRef.current && !user) {
+    return <div>Loading...</div>
+  }
   return (
 
     <div className="playground">
@@ -190,9 +190,9 @@ function Page() {
             onMouseMove={(e) => (cur.current.style.transform = `translate(${e.clientX - 17}px, ${e.clientY - 40}px)`)}
           >
             <div className="front">
-            <Profile user={user || localUserRef.current} />
-            <div className="mapCover">
-              <Mapp />
+              <Profile user={user || localUserRef.current} />
+              <div className="mapCover">
+                <Mapp />
               </div>
             </div>
             <Image

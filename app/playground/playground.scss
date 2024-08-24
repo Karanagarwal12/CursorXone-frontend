@@ -1,21 +1,23 @@
 .playground {
+  cursor: none;
   height: 10800px;
   width: 19200px;
   overflow: hidden;
   position: relative;
   background-color: #021027;
-
   .allCursors {
     position: absolute;
     height: 100%;
     width: 100%;
+    pointer-events: none;
+    z-index: 9;
     .otherCursor {
       height: 100px;
       width: 100px;
       position: absolute;
       background: url("../../assets/cursor01.png") no-repeat;
       background-size: contain;
-      pointer-events: none;
+      pointer-events: all;
     }
   }
   .csr {
@@ -23,14 +25,23 @@
     width: 100px;
     object-fit: contain;
     pointer-events: none;
+    position: fixed;
     filter: invert(1);
     z-index: 99;
+    img {
+      z-index: 99;
+    }
   }
   .outer {
     height: 100vh;
     width: 100vw;
-    cursor: none;
     position: fixed;
+    pointer-events: none;
+    z-index: 2;
+    #profile,
+    .mapCover {
+      pointer-events: all;
+    }
     .front {
       height: 100%;
       width: 100%;

@@ -177,17 +177,26 @@ function Page() {
   }
   return (
 
-    <div className="playground">
+    <div className="playground"
+      onMouseEnter={() => (cur.current.style.display = 'block')}
+      onMouseLeave={() => (cur.current.style.display = 'none')}
+      onMouseMove={(e) => (cur.current.style.transform = `translate(${e.clientX - 17}px, ${e.clientY - 40}px)`)}
+      >
       {(user || localUserRef.current) &&
         <>
           <CanvasBg />
-          <div className="allCursors" ref={allMouse}></div>
+          <Image
+            className="csr"
+            src={curImg}
+            alt="Cursor Image"
+            width={100}
+            height={100}
+            ref={cur}
+          />
           <div
             className="outer"
             ref={outer}
-            onMouseEnter={() => (cur.current.style.display = 'block')}
-            onMouseLeave={() => (cur.current.style.display = 'none')}
-            onMouseMove={(e) => (cur.current.style.transform = `translate(${e.clientX - 17}px, ${e.clientY - 40}px)`)}
+
           >
             <div className="front">
               <Profile user={user || localUserRef.current} />
@@ -195,15 +204,8 @@ function Page() {
                 <Mapp />
               </div>
             </div>
-            <Image
-              className="csr"
-              src={curImg}
-              alt="Cursor Image"
-              width={100}
-              height={100}
-              ref={cur}
-            />
           </div>
+          <div className="allCursors" ref={allMouse}></div>
         </>
       }
     </div>

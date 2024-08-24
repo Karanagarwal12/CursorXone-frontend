@@ -29,4 +29,6 @@ html::-webkit-scrollbar {
   display: none;
 }
 
-
+canvas{
+  pointer-events: none;
+}

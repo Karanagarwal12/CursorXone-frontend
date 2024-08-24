@@ -1,13 +1,13 @@
 .mapCover {
-  height: 100%;
-  width: 100%;
+  height: fit-content;
+  width: fit-content;
+  position: fixed;
+  top: 82vh;
+  left: 88vw;
   #map {
     background-color: #2222228a;
     border: 2px solid black;
     border-radius: 50%;
-    position: absolute;
-    bottom: 1%;
-    right: 1%;
     height: 15vh;
     width: 15vh;
     transition: all 0.3s ease-in-out;

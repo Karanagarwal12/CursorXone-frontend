@@ -79,8 +79,9 @@ export default function Home() {
         password,
       });
       const userDetails = response.data.body;
-      console.log(response.data.body);
+      // console.log(response.data.body);
       setUser(userDetails);
+      router.push('/playground');
     } catch (err) {
       setError(err.response?.data?.message || 'An error occurred');
     }

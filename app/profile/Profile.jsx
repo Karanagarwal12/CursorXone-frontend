@@ -2,8 +2,10 @@ import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import Image from 'next/image';
 import './profile.scss';
+import { useUserContext } from '../context/UserContext';
 
 export default function Profile(user) {
+    const {joinedUsers, setJoinedUsers} = useUserContext();
     const profile = useRef();
     const prImg = useRef();
     const [curUser, setCurUser] = useState(user?.user);
@@ -11,37 +13,38 @@ export default function Profile(user) {
     const [isOpened, setIsOpened] = useState(false);
     const [userImages, setUserImages] = useState(null);
     useEffect(() => {
-        if (curUsername) {
-
-            axios.post('http://103.209.145.248:3000/cursors/get', { username: curUsername })
+        if (curUsername && curUsername !== user?.user?.name) {
+            axios.post('http://103.209.145.248:3000/users/', { username: curUsername })
                 .then(response => {
-                    const imageStrings = response.data.body.map(item => item.imagebase64);
-                    console.log("called");
-                    setUserImages(imageStrings);
+                    setCurUser(response.data.body);
                 })
                 .catch(error => {
-                    console.log("called");
                     console.error('Error fetching data:', error);
                 });
-
-            if (curUsername !== user?.user?.name) {
-                axios.post('http://103.209.145.248:3000/users/', { username: curUsername })
-                    .then(response => {
-                        setCurUser(response.data.body);
-                    })
-                    .catch(error => {
-                        console.error('Error fetching data:', error);
-                    });
-            }
-
         }
     }, [curUsername, user]);
 
     useEffect(() => {
+        if (curUser) {
+            axios.post('http://103.209.145.248:3000/cursors/get', { userid: curUser._id })
+                .then(response => {
+                    const imageStrings = response.data.body.map(item => item.imagebase64);
+                    setUserImages(imageStrings);
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+        }
+    }, [curUser]);
+    
+    useEffect(() => {
         const elements = document.querySelectorAll('.otherCursor');
+        const myCur = document.querySelector('.csr');
 
+        console.log(joinedUsers);
         const handleClick = (event) => {
             const elementId = event.target.id;
+            console.log(elementId);
             if (curUsername == elementId) {
                 setIsOpened(false);
             } else {
@@ -60,7 +63,7 @@ export default function Profile(user) {
                 element.removeEventListener('click', handleClick);
             });
         };
-    }, []);
+    }, [joinedUsers]);
 
     const handleClick = (e) => {
         setIsOpened(!isOpened);

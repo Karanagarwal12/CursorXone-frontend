@@ -4,7 +4,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Mapp from '../map/Map';
 import Profile from '../profile/Profile';
 import { io } from 'socket.io-client';
-import '../cursors/cursor.scss';
 import './playground.scss';
 import CanvasBg from '../canvasBg/CanvasBg';
 import { Suspense } from 'react';
@@ -16,13 +15,14 @@ function Page() {
 
   const cur = useRef();
   const outer = useRef();
-  const { user, setUser } = useUserContext();
+  const { user, setUser, joinedUsers, setJoinedUsers } = useUserContext();
 
   const roomId = '123456';
   const router = useRouter();
 
   const [socket, setSocket] = useState(null);
   const [clients, setClients] = useState([]);
+
   const myCursor = { x: 0, y: 0 };
 
 
@@ -39,6 +39,9 @@ function Page() {
     }
   }, [router]);
 
+  if (!localUserRef.current && !user) {
+    return <div>Loading...</div>
+  }
 
   const username = user?.name || localUserRef.current?.name;
 
@@ -76,6 +79,7 @@ function Page() {
       childElement = document.createElement('div');
       childElement.id = e.username;
       childElement.className = 'otherCursor';
+      setJoinedUsers(prev => [...prev, e.username]);
 
       // Apply the styles to the new element
       childElement.style.top = `${e.cursorPos.y - 40}px`;
@@ -186,9 +190,9 @@ function Page() {
             onMouseMove={(e) => (cur.current.style.transform = `translate(${e.clientX - 17}px, ${e.clientY - 40}px)`)}
           >
             <div className="front">
-              <Profile user={user || localUserRef.current} />
-              <div className="mapCover">
-                <Mapp />
+            <Profile user={user || localUserRef.current} />
+            <div className="mapCover">
+              <Mapp />
               </div>
             </div>
             <Image

@@ -5,7 +5,7 @@ import './profile.scss';
 import { useUserContext } from '../context/UserContext';
 
 export default function Profile(user) {
-    const {joinedUsers, setJoinedUsers} = useUserContext();
+    const { joinedUsers, setJoinedUsers, joinedUserDetails, setJoinedUserDetails } = useUserContext();
     const profile = useRef();
     const prImg = useRef();
     const [curUser, setCurUser] = useState(user?.user);
@@ -13,16 +13,15 @@ export default function Profile(user) {
     const [isOpened, setIsOpened] = useState(false);
     const [userImages, setUserImages] = useState(null);
     useEffect(() => {
-        if (curUsername && curUsername !== user?.user?.name) {
-            axios.post('http://103.209.145.248:3000/users/', { username: curUsername })
-                .then(response => {
-                    setCurUser(response.data.body);
-                })
-                .catch(error => {
-                    console.error('Error fetching data:', error);
-                });
+        if (curUsername && curUsername !== user?.user?.name && joinedUserDetails && joinedUserDetails[0]) {
+            const foundUser = joinedUserDetails.find((user) => user?.name === curUsername);
+
+            if (foundUser) {
+                setCurUser(foundUser);
+            }
         }
-    }, [curUsername, user]);
+    }, [curUsername, user, joinedUserDetails]);
+
 
     useEffect(() => {
         if (curUser) {
@@ -36,27 +35,43 @@ export default function Profile(user) {
                 });
         }
     }, [curUser]);
-    
+
+    const handleCurClick = (event) => {
+        const elementId = event.target.id;
+        console.log(elementId);
+        if (curUsername == elementId) {
+            setIsOpened(true);
+        } else {
+            setIsOpened(false);
+        }
+        setCurUsername(elementId);
+    };
     useEffect(() => {
         const elements = document.querySelectorAll('.otherCursor');
-        const myCur = document.querySelector('.csr');
-
-        console.log(joinedUsers);
-        const handleClick = (event) => {
-            const elementId = event.target.id;
-            console.log(elementId);
-            if (curUsername == elementId) {
-                setIsOpened(false);
-            } else {
-                setIsOpened(true);
-            }
-            setCurUsername(elementId);
-        };
 
         elements.forEach(element => {
-            element.addEventListener('click', handleClick);
+            element.addEventListener('click', handleCurClick);
         });
 
+        if (joinedUsers.length > 0) {
+            const newJoinedUser = joinedUsers[joinedUsers.length - 1]; // Get the last user added
+
+            if (!joinedUserDetails[newJoinedUser]) { // Check if the user details are not already fetched
+                axios.post('http://103.209.145.248:3000/users/', { username: newJoinedUser })
+                    .then(response => {
+                        elements[elements.length - 1].style.background = `url(${response.data.body?.currentimage}) no-repeat`;
+                        elements[elements.length - 1].style.backgroundSize = `contain`;
+                        document.getElementById(`${newJoinedUser}-map`).src = response.data.body?.currentimage;
+                        setJoinedUserDetails(prevDetails => ({
+                            ...prevDetails,
+                            [newJoinedUser]: response.data.body,
+                        }));
+                    })
+                    .catch(error => {
+                        console.error('Error fetching data:', error);
+                    });
+            }
+        }
         // Cleanup event listeners when the component unmounts
         return () => {
             elements.forEach(element => {
@@ -65,23 +80,22 @@ export default function Profile(user) {
         };
     }, [joinedUsers]);
 
-    const handleClick = (e) => {
-        setIsOpened(!isOpened);
+    useEffect(() => {
         if (isOpened) {
             profile.current.style.height = '0vh';
             profile.current.style.width = '0vw';
             profile.current.style.padding = '0vw';
             prImg.current.style.opacity = 1;
         } else {
-
             profile.current.style.height = '90vh';
             profile.current.style.width = '30vw';
             profile.current.style.padding = '2vw';
             prImg.current.style.opacity = 0;
         }
-    }
+    }, [isOpened])
+
     return (
-        <div id="profile" onClick={handleClick}>
+        <div id="profile" onClick={() => setIsOpened(!isOpened)}>
             <div className="inner" ref={profile} >
                 {isOpened && <>
                     <div className="name">{curUser?.name.toUpperCase()}</div>

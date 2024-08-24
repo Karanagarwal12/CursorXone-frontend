@@ -8,18 +8,20 @@ const UserContext = createContext();
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [joinedUsers, setJoinedUsers] = useState([]); // State to store joined users
+  const [joinedUserDetails, setJoinedUserDetails] = useState({}); // State to store details of joined users
   const [isHydrated, setIsHydrated] = useState(false); // State to track hydration
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const savedUser = localStorage.getItem('userD');
-      const savedJoinedUsers = localStorage.getItem('joinedUsers'); // Load joined users from localStorage
+      const savedUserDetails = localStorage.getItem('joinedUserDetails');
 
       if (savedUser) {
         setUser(JSON.parse(savedUser));
       }
-      if (savedJoinedUsers) {
-        setJoinedUsers(JSON.parse(savedJoinedUsers));
+
+      if (savedUserDetails) {
+        setJoinedUserDetails(JSON.parse(savedUserDetails));
       }
 
       setIsHydrated(true); // Mark hydration as complete
@@ -28,17 +30,12 @@ export const UserProvider = ({ children }) => {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      if(user){
+      if (user) {
         localStorage.setItem('userD', JSON.stringify(user));
       }
+      localStorage.setItem('joinedUserDetails', JSON.stringify(joinedUserDetails));
     }
-  }, [user]);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('joinedUsers', JSON.stringify(joinedUsers));
-    }
-  }, [joinedUsers]);
+  }, [user, joinedUserDetails]);
 
   // Only render children after hydration is complete
   if (!isHydrated) {
@@ -46,7 +43,7 @@ export const UserProvider = ({ children }) => {
   }
 
   return (
-    <UserContext.Provider value={{ user, setUser, joinedUsers, setJoinedUsers }}>
+    <UserContext.Provider value={{ user, setUser, joinedUsers, setJoinedUsers, joinedUserDetails, setJoinedUserDetails }}>
       {children}
     </UserContext.Provider>
   );

@@ -45,7 +45,7 @@ function Page() {
 
 
   const allMouseMove = (e) => {
-    let childElementMap = e.mapParent.querySelector(`#${e.username}`);
+    let childElementMap = e.mapParent.querySelector(`#${e.username}-map`);
     // cursors.set(e.username, e.cursorPos);
     if (childElementMap) {
       // If the child exists, apply the styles to it
@@ -54,7 +54,7 @@ function Page() {
     } else {
       // If the child doesn't exist, create a new element
       childElementMap = document.createElement('img');
-      childElementMap.id = e.username;
+      childElementMap.id = `${e.username}-map`;
       childElementMap.className = 'otherCursorMap';
       childElementMap.src = curImg;
 

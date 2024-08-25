@@ -12,9 +12,9 @@ import Image from "next/image";
 import tableimg from "../../assets/table.png";
 
 function Page() {
-  var pushToTalk = false;
-  // const [pu,setpushToTalk] = false
-
+  // var pushToTalk = false;
+  const [pushToTalk,setpushToTalk] = useState(false)
+  const pushToTalkRef = useRef(pushToTalk);
   const [curTable, setCurTable] = useState(-1);
   const cur = useRef();
   const outer = useRef();
@@ -36,6 +36,9 @@ function Page() {
 
   const [messages, setmessages] = useState([{ text: "enter a message gloabally", username: "admin" }]);
 
+  useEffect(() => {
+    pushToTalkRef.current = pushToTalk;
+  }, [pushToTalk]);
   useEffect(() => {
     localUserRef.current = localStorage.getItem("userD");
     if (localUserRef.current) {
@@ -201,6 +204,9 @@ function Page() {
   if (!localUserRef.current && !user) {
     return <div>Loading...</div>;
   }
+  useEffect(()=>{
+
+  });
 
   const handleJoinTable = (tableId) => {
     console.log(curTable);
@@ -231,8 +237,8 @@ function Page() {
         var audioChunks = [];
 
         madiaRecorder.addEventListener("dataavailable", function (event) {
-          if (pushToTalk) {
-            console.log(pushToTalk);
+          console.log("data " , pushToTalkRef.current);
+          if (pushToTalkRef.current) {
             audioChunks.push(event.data);
           }
           // console.log(audioChunks);
@@ -245,7 +251,7 @@ function Page() {
           fileReader.readAsDataURL(audioBlob);
           fileReader.onloadend = function () {
             var base64String = fileReader.result;
-            if (pushToTalk) {
+            if ( pushToTalkRef.current) {
               console.log("emitung");
               socket.emit("audioStream", { base64String, tableId, username });
               console.log("emited")
@@ -331,7 +337,8 @@ function Page() {
                 {/* <button onClick={()=>handleLeaveTable()}>table 3</button> */}
                 <button
                   onClick={() => {
-                    pushToTalk = !pushToTalk;
+                    // pushToTalk = !pushToTalk;
+                    setpushToTalk(!pushToTalk);
                     console.log(pushToTalk);
                   }}
                 >

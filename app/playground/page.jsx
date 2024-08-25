@@ -25,12 +25,12 @@ function Page() {
 
   const myCursor = { x: 0, y: 0 };
 
+  const allMouse = useRef();
+  const localUserRef = useRef(null);
   const username = user?.name || localUserRef.current?.name;
 
   const curImg = user?.currentimage || localUserRef.current?.currentimage;
-  const allMouse = useRef();
 
-  const localUserRef = useRef(null);
   useEffect(() => {
     localUserRef.current = localStorage.getItem('userD');
     if (localUserRef.current) {

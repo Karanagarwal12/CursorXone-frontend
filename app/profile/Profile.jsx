@@ -1,28 +1,31 @@
 import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
-import Image from 'next/image';
 import './profile.scss';
 import { useUserContext } from '../context/UserContext';
 
-export default function Profile(user) {
+export default function Profile({ user }) {
     const { joinedUsers, setJoinedUsers, joinedUserDetails, setJoinedUserDetails } = useUserContext();
     const profile = useRef();
     const prImg = useRef();
-    const [curUser, setCurUser] = useState(user?.user);
-    const [curUsername, setCurUsername] = useState(user?.user?.name);
+    const [curUser, setCurUser] = useState(user);
+    const [curUsername, setCurUsername] = useState(user?.name);
     const [isOpened, setIsOpened] = useState(false);
-    const [userImages, setUserImages] = useState(null);
-    useEffect(() => {
-        if (curUsername && curUsername !== user?.user?.name && joinedUserDetails && joinedUserDetails[0]) {
-            const foundUser = joinedUserDetails.find((user) => user?.name === curUsername);
+    const [userImages, setUserImages] = useState([]);
 
+    // Update current user based on curUsername
+    useEffect(() => {
+        console.log("Current Username in Effect:", curUsername);
+        if (curUsername && curUsername !== user?.name && joinedUserDetails) {
+            const foundUser = joinedUserDetails[curUsername];
             if (foundUser) {
                 setCurUser(foundUser);
+            } else {
+                console.error('User not found');
             }
         }
     }, [curUsername, user, joinedUserDetails]);
 
-
+    // Fetch user images when curUser changes
     useEffect(() => {
         if (curUser) {
             axios.post('http://103.209.145.248:3000/cursors/get', { userid: curUser._id })
@@ -36,16 +39,29 @@ export default function Profile(user) {
         }
     }, [curUser]);
 
+    // Handle click on cursor elements
     const handleCurClick = (event) => {
         const elementId = event.target.id;
-        console.log(elementId);
-        if (curUsername == elementId) {
-            setIsOpened(true);
+        console.log("Handling Click:", curUsername, elementId);
+
+        if (curUsername !== elementId) {
+            setCurUsername(elementId);  // Update username
+            setIsOpened(true);          // Open profile
         } else {
-            setIsOpened(false);
+            setIsOpened(prevState => !prevState);  // Toggle profile visibility
         }
-        setCurUsername(elementId);
     };
+
+    // Handle click on profile image
+    const handleProfileClick = () => {
+        setIsOpened(prevState => !prevState);
+        if (!isOpened) {
+            setCurUser(user);
+            setCurUsername(user?.name);
+        }
+    };
+
+    // Setup and cleanup event listeners for cursor elements
     useEffect(() => {
         const elements = document.querySelectorAll('.otherCursor');
 
@@ -53,80 +69,61 @@ export default function Profile(user) {
             element.addEventListener('click', handleCurClick);
         });
 
-        if (joinedUsers.length > 0) {
-            const newJoinedUser = joinedUsers[joinedUsers.length - 1]; // Get the last user added
-
-            if (!joinedUserDetails[newJoinedUser]) { // Check if the user details are not already fetched
-                axios.post('http://103.209.145.248:3000/users/', { username: newJoinedUser })
-                    .then(response => {
-                        elements[elements.length - 1].style.background = `url(${response.data.body?.currentimage}) no-repeat`;
-                        elements[elements.length - 1].style.backgroundSize = `contain`;
-                        document.getElementById(`${newJoinedUser}-map`).src = response.data.body?.currentimage;
-                        setJoinedUserDetails(prevDetails => ({
-                            ...prevDetails,
-                            [newJoinedUser]: response.data.body,
-                        }));
-                    })
-                    .catch(error => {
-                        console.error('Error fetching data:', error);
-                    });
-            }
-        }
-        // Cleanup event listeners when the component unmounts
         return () => {
             elements.forEach(element => {
-                element.removeEventListener('click', handleClick);
+                element.removeEventListener('click', handleCurClick);
             });
         };
     }, [joinedUsers]);
 
+    // Adjust profile display based on isOpened state
     useEffect(() => {
-        if (isOpened) {
-            profile.current.style.height = '0vh';
-            profile.current.style.width = '0vw';
-            profile.current.style.padding = '0vw';
-            prImg.current.style.opacity = 1;
-        } else {
-            profile.current.style.height = '90vh';
-            profile.current.style.width = '30vw';
-            profile.current.style.padding = '2vw';
-            prImg.current.style.opacity = 0;
+        if (profile.current) {
+            profile.current.style.height = isOpened ? '90vh' : '0vh';
+            profile.current.style.width = isOpened ? '30vw' : '0vw';
+            profile.current.style.padding = isOpened ? '2vw' : '0vw';
+            if (prImg.current) {
+                prImg.current.style.opacity = isOpened ? 0 : 1;
+            }
         }
-    }, [isOpened])
+    }, [isOpened]);
 
     return (
-        <div id="profile" onClick={() => setIsOpened(!isOpened)}>
-            <div className="inner" ref={profile} >
-                {isOpened && <>
-                    <div className="name">{curUser?.name.toUpperCase()}</div>
-                    <div className="bio">{curUser?.bio}</div>
-                    <div className="links">
-                        {curUser?.socialLinks.map((link, i) => <span key={i}><a href={link.link}>{link.text}</a></span>)}
-                    </div>
-                    <div>
-                        {userImages && userImages?.length > 0 && (
-                            userImages.map((image, index) => (
-                                <Image
+        <div id="profile">
+            <div className="inner" ref={profile} onClick={handleProfileClick}>
+                {isOpened && curUser && (
+                    <>
+                        <div className="name">{curUser.name.toUpperCase()}</div>
+                        <div className="bio">{curUser.bio}</div>
+                        <div className="links">
+                            {curUser.socialLinks.map((link, i) => (
+                                <span key={i}>
+                                    <a href={link.link}>{link.text}</a>
+                                </span>
+                            ))}
+                        </div>
+                        <div>
+                            {userImages.length > 0 && userImages.map((image, index) => (
+                                <img
                                     key={index}
                                     src={image}
                                     alt={`User Image ${index + 1}`}
-                                    width={100} // Specify the desired width
-                                    height={100} // Specify the desired height
+                                    width={100}
+                                    height={100}
                                 />
-                            ))
-                        )}
-                    </div>
-                </>
-                }
+                            ))}
+                        </div>
+                    </>
+                )}
             </div>
-            <Image
-                src={user?.user?.currentimage}
+            <img
+                src={user?.currentimage}
                 alt="Profile Image"
                 width={100}
                 height={100}
                 ref={prImg}
+                onClick={handleProfileClick}
             />
-
         </div>
-    )
+    );
 }

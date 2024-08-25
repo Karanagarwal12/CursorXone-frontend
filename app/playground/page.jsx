@@ -14,6 +14,7 @@ import tableimg from "../../assets/table.png";
 function Page() {
   // var pushToTalk = false;
   const [pushToTalk, setpushToTalk] = useState(false)
+  const [emoji , setemoji] = useState(null);
   const pushToTalkRef = useRef(pushToTalk);
   const [curTable, setCurTable] = useState(-1);
   const cur = useRef();
@@ -122,7 +123,7 @@ function Page() {
       socketInstance.emit("connected-users", clients);
     });
 
-    socketInstance.on("remote-cursor-move", ({ username, cursorPos }) => {
+    socketInstance.on("remote-cursor-move", ({ username, cursorPos , emoji }) => {
       // console.log(`Received cursor position for ${username}:`, cursorPos);
       allMouseMove({ username, cursorPos, mapParent });
     });
@@ -131,6 +132,8 @@ function Page() {
       console.log("message by ", username);
       console.log(text);
     })
+
+    
 
     socketInstance.on("connected-users-table", (table) => {
       setTable(table);
@@ -162,14 +165,14 @@ function Page() {
         x: htmlElem.scrollLeft + event.clientX,
         y: htmlElem.scrollTop + event.clientY,
       };
-      socket.emit("cursor-move", { roomId, username, cursorPos });
+      socket.emit("cursor-move", { roomId, username, cursorPos , emoji });
     };
     const emitOnScroll = (e) => {
       const cursorPos = {
         x: e.target.scrollingElement.scrollLeft + myCursor.x,
         y: e.target.scrollingElement.scrollTop + myCursor.y,
       };
-      socket.emit("cursor-move", { roomId, username, cursorPos });
+      socket.emit("cursor-move", { roomId, username, cursorPos , emoji});
     };
 
     document.addEventListener("mousemove", handleMouseMove);
@@ -179,7 +182,7 @@ function Page() {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("scroll", handleMouseMove);
     };
-  }, [socket, roomId, username]);
+  }, [socket, roomId, username , emoji]);
 
   const handleConnectedUsers = (users) => {
     setClients(users);

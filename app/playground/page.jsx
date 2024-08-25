@@ -12,11 +12,13 @@ import Image from "next/image";
 import tableimg from "../../assets/table.png";
 import MicIcon from '@mui/icons-material/Mic';
 import MicOffIcon from '@mui/icons-material/MicOff';
+import MessageIcon from '@mui/icons-material/Message';
+import { EmojiSelector, EmojiDisplay } from '@/components/emojiSelector';
 
 function Page() {
   // var pushToTalk = false;
   const [pushToTalk, setpushToTalk] = useState(false)
-  const [emoji , setemoji] = useState(null);
+  const [emoji, setemoji] = useState(null);
   const pushToTalkRef = useRef(pushToTalk);
   const [curTable, setCurTable] = useState(-1);
   const cur = useRef();
@@ -125,7 +127,7 @@ function Page() {
       socketInstance.emit("connected-users", clients);
     });
 
-    socketInstance.on("remote-cursor-move", ({ username, cursorPos , emoji }) => {
+    socketInstance.on("remote-cursor-move", ({ username, cursorPos, emoji }) => {
       // console.log(`Received cursor position for ${username}:`, cursorPos);
       allMouseMove({ username, cursorPos, mapParent });
     });
@@ -135,7 +137,7 @@ function Page() {
       console.log(text);
     })
 
-    
+
 
     socketInstance.on("connected-users-table", (table) => {
       setTable(table);
@@ -167,14 +169,14 @@ function Page() {
         x: htmlElem.scrollLeft + event.clientX,
         y: htmlElem.scrollTop + event.clientY,
       };
-      socket.emit("cursor-move", { roomId, username, cursorPos , emoji });
+      socket.emit("cursor-move", { roomId, username, cursorPos, emoji });
     };
     const emitOnScroll = (e) => {
       const cursorPos = {
         x: e.target.scrollingElement.scrollLeft + myCursor.x,
         y: e.target.scrollingElement.scrollTop + myCursor.y,
       };
-      socket.emit("cursor-move", { roomId, username, cursorPos , emoji});
+      socket.emit("cursor-move", { roomId, username, cursorPos, emoji });
     };
 
     document.addEventListener("mousemove", handleMouseMove);
@@ -184,7 +186,7 @@ function Page() {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("scroll", handleMouseMove);
     };
-  }, [socket, roomId, username , emoji]);
+  }, [socket, roomId, username, emoji]);
 
   const handleConnectedUsers = (users) => {
     setClients(users);
@@ -336,7 +338,9 @@ function Page() {
           <div className="outer" ref={outer}>
             <div className="front">
               <Profile user={user || localUserRef.current} />
-              <button onClick={() => {setpushToTalk(!pushToTalk);console.log(pushToTalk)}} className="pushTalk">{!pushToTalk && <MicOffIcon className="mic"/> || <MicIcon className="mic"/>}</button>
+              <div className="globalChat navBtn"><MessageIcon className="globalChatIn inn" />
+              </div>
+              <button onClick={() => { setpushToTalk(!pushToTalk); console.log(pushToTalk) }} className="pushTalk navBtn">{!pushToTalk && <MicOffIcon className="mic inn" /> || <MicIcon className="mic" />}</button>
               <div className="mapCover">
                 <Mapp />
 

@@ -129,14 +129,16 @@ export default function Profile() {
                     </>
                 )}
             </div>
-            <img
-                src={user?.currentimage}
-                alt="Profile Image"
-                width={100}
-                height={100}
-                ref={prImg}
-                onClick={handleProfileClick}
-            />
+            <div className='profileImg'>
+                <img
+                    src={user?.currentimage}
+                    alt="Profile Image"
+                    width={100}
+                    height={100}
+                    ref={prImg}
+                    onClick={handleProfileClick}
+                />
+            </div>
         </div>
     );
 }

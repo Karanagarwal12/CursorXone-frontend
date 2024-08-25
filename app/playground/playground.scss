@@ -111,19 +111,35 @@
       height: 100%;
       width: 100%;
       position: absolute;
-      & > .pushTalk {
+      & > .navBtn {
         background-color: snow;
         position: absolute;
-        top: calc(100px + 2vw);
         margin: 1vw;
-        margin-top: 0;
+        padding: 5px;
         height: 100px;
         width: 100px;
+        margin-top: 0;
         border-radius: 50%;
         pointer-events: all;
         cursor: none;
-        .mic{
-          font-size: 50px;
+        & > .inn {
+          height: 90px;
+          width: 90px;
+          border: 2px solid #000;
+          border-radius: 50%;
+          padding: 1vw;
+        }
+      }
+      & > .pushTalk {
+        top: calc(100px + 2vw);
+        .mic {
+          font-size: 90px;
+        }
+      }
+      & > .globalChat {
+        top: calc(200px + 3vw);
+        &>.globalChatIn{
+          font-size: 90px;
         }
       }
     }

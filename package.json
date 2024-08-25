@@ -9,14 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
-<<<<<<< HEAD
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@mui/icons-material": "^5.16.7",
     "@mui/material": "^5.16.7",
-=======
     "@lottiefiles/dotlottie-react": "^0.8.9",
->>>>>>> a666ee722d8c6b4f727087ec1e2f13b3562374b6
     "axios": "^1.7.4",
     "next": "^14.2.5",
     "react": "^18.3.1",

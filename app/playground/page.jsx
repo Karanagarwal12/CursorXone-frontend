@@ -18,7 +18,8 @@ import { EmojiSelector, EmojiDisplay } from '@/components/emojiSelector';
 function Page() {
   // var pushToTalk = false;
   const [pushToTalk, setpushToTalk] = useState(false)
-  const [emoji, setemoji] = useState(null);
+  const [emoji , setemoji] = useState(null);
+  const [emojiText , setemojiText] = useState(null);
   const pushToTalkRef = useRef(pushToTalk);
   const [curTable, setCurTable] = useState(-1);
   const cur = useRef();
@@ -127,7 +128,7 @@ function Page() {
       socketInstance.emit("connected-users", clients);
     });
 
-    socketInstance.on("remote-cursor-move", ({ username, cursorPos, emoji }) => {
+    socketInstance.on("remote-cursor-move", ({ username, cursorPos  }) => {
       // console.log(`Received cursor position for ${username}:`, cursorPos);
       allMouseMove({ username, cursorPos, mapParent });
     });
@@ -137,7 +138,10 @@ function Page() {
       console.log(text);
     })
 
-
+    socketInstance.on("emoji-changed", (emoji)=>{
+      setemoji(emoji);
+    })
+    
 
     socketInstance.on("connected-users-table", (table) => {
       setTable(table);
@@ -169,14 +173,14 @@ function Page() {
         x: htmlElem.scrollLeft + event.clientX,
         y: htmlElem.scrollTop + event.clientY,
       };
-      socket.emit("cursor-move", { roomId, username, cursorPos, emoji });
+      socket.emit("cursor-move", { roomId, username, cursorPos  });
     };
     const emitOnScroll = (e) => {
       const cursorPos = {
         x: e.target.scrollingElement.scrollLeft + myCursor.x,
         y: e.target.scrollingElement.scrollTop + myCursor.y,
       };
-      socket.emit("cursor-move", { roomId, username, cursorPos, emoji });
+      socket.emit("cursor-move", { roomId, username, cursorPos });
     };
 
     document.addEventListener("mousemove", handleMouseMove);
@@ -186,7 +190,7 @@ function Page() {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("scroll", handleMouseMove);
     };
-  }, [socket, roomId, username, emoji]);
+  }, [socket, roomId, username ]);
 
   const handleConnectedUsers = (users) => {
     setClients(users);
@@ -313,6 +317,10 @@ function Page() {
     socket.emit("leave-table", { tableId, username });
   };
 
+  const handleEmoji = () => {
+    socket.emit('emoji', {emojiText , username});
+  }
+
   return (
     <div
       className="playground"
@@ -344,6 +352,16 @@ function Page() {
               <div className="mapCover">
                 <Mapp />
 
+                {/* <button onClick={()=>handleLeaveTable()}>table 3</button> */}
+                <button
+                  onClick={() => {
+                    // pushToTalk = !pushToTalk;
+                    setpushToTalk(!pushToTalk);
+                    console.log(pushToTalk);
+                  }}
+                >
+                  talk
+                </button>
               </div>
             </div>
           </div>
@@ -354,9 +372,9 @@ function Page() {
                 <div key={number} className="table">
                   <div className="number" onClick={() => setIsPeopleOpen(prev => !prev)}>
                     {isPeopleOpen &&
-
-                      ((table && table.hasOwnProperty(number) && table[number].length) ? table[number].map((person, i) => <div key={i} className="person">{person?.username}</div>) : "No User Connected")
-
+                      (<div>
+                        {table && table.hasOwnProperty(number) ? table[number].map((person,i)=> <div key={i} className="person">{person?.username}</div>) : "No User Connected"}
+                      </div>)
                       ||
                       (table && table.hasOwnProperty(number) ? table[number].length : 0)
                     }

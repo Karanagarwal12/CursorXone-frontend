@@ -22,46 +22,62 @@
       pointer-events: all;
       width: 350px;
 
-      &>.number{
-        width: 45px;
-        border-radius: 50%;
+      & > .number {
+        width: fit-content;
+        border-radius: 10px;
         font-weight: 600;
         font-size: 35px;
-        line-height: 45px;
+        line-height: 35px;
+        padding: 10px;
         background-color: snow;
         text-align: center;
-        transform: translate(300px,50px);
+        transform: translate(300px, 50px);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        .person {
+          background-color: #00000018;
+          padding: 4px;
+          font-size: 25px;
+        }
+      }
+      & > .buttonleave {
+        background-color: rgb(255, 109, 109);
+        border-radius: 10px;
+        cursor: none;
+        padding: 10px;
+        // color: #fff;
       }
       &:nth-child(1) {
         position: absolute;
         top: 600px;
         left: 1300px;
       }
-  
+
       &:nth-child(2) {
         position: absolute;
         top: 2580px;
         left: 6560px;
       }
-  
+
       &:nth-child(3) {
         position: absolute;
         top: 7800px;
         left: 4200px;
       }
-  
+
       &:nth-child(4) {
         position: absolute;
         top: 6500px;
         left: 15500px;
       }
-  
+
       &:nth-child(5) {
         position: absolute;
         top: 2000px;
         left: 13000px;
       }
-  
+
       &:nth-child(6) {
         position: absolute;
         top: 9100px;
@@ -94,6 +110,21 @@
       height: 100%;
       width: 100%;
       position: absolute;
+      & > .pushTalk {
+        background-color: snow;
+        position: absolute;
+        top: calc(100px + 2vw);
+        margin: 1vw;
+        margin-top: 0;
+        height: 100px;
+        width: 100px;
+        border-radius: 50%;
+        pointer-events: all;
+        cursor: none;
+        .mic{
+          font-size: 50px;
+        }
+      }
     }
   }
 }

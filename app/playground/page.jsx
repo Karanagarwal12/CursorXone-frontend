@@ -10,6 +10,8 @@ import { Suspense } from "react";
 import { useUserContext } from "../context/UserContext";
 import Image from "next/image";
 import tableimg from "../../assets/table.png";
+import MicIcon from '@mui/icons-material/Mic';
+import MicOffIcon from '@mui/icons-material/MicOff';
 
 function Page() {
   // var pushToTalk = false;
@@ -331,19 +333,10 @@ function Page() {
           <div className="outer" ref={outer}>
             <div className="front">
               <Profile user={user || localUserRef.current} />
+              <button onClick={() => {setpushToTalk(!pushToTalk);console.log(pushToTalk)}} className="pushTalk">{!pushToTalk && <MicOffIcon className="mic"/> || <MicIcon className="mic"/>}</button>
               <div className="mapCover">
                 <Mapp />
 
-                {/* <button onClick={()=>handleLeaveTable()}>table 3</button> */}
-                <button
-                  onClick={() => {
-                    // pushToTalk = !pushToTalk;
-                    setpushToTalk(!pushToTalk);
-                    console.log(pushToTalk);
-                  }}
-                >
-                  talk
-                </button>
               </div>
             </div>
           </div>
@@ -354,9 +347,9 @@ function Page() {
                 <div key={number} className="table">
                   <div className="number" onClick={() => setIsPeopleOpen(prev => !prev)}>
                     {isPeopleOpen &&
-                      (<div>
-                        {table && table.hasOwnProperty(number) ? table[number].map((person,i)=> <div key={i} className="person">{person?.username}</div>) : "No User Connected"}
-                      </div>)
+
+                      ((table && table.hasOwnProperty(number) && table[number].length) ? table[number].map((person, i) => <div key={i} className="person">{person?.username}</div>) : "No User Connected")
+
                       ||
                       (table && table.hasOwnProperty(number) ? table[number].length : 0)
                     }

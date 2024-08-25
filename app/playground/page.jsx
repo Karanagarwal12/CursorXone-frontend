@@ -13,6 +13,7 @@ import Image from 'next/image';
 
 function Page() {
   var pushToTalk = false
+  const [curTable , setCurTable] = useState(-1);
   const cur = useRef();
   const outer = useRef();
   const { user, setUser, joinedUsers, setJoinedUsers } = useUserContext();
@@ -120,6 +121,10 @@ function Page() {
       allMouseMove({ username, cursorPos, mapParent });
     });
 
+    socketInstance.on('connected-users-table' , (table) =>{
+      console.log(table)
+    })
+
     return () => {
       socketInstance.off('user-joined');
       socketInstance.off('connected-users');
@@ -178,23 +183,42 @@ function Page() {
   }
 
 
+
+  const handleJoinTable = (tableId)=> {
+    console.log(curTable)
+    if(curTable!= -1){
+      handleLeaveTable(curTable);
+
+      setCurTable(tableId);
+      console.log(tableId);
+      console.log(curTable);
+      handletableclick(tableId);
+    }else{
+      console.log(tableId);
+      setCurTable(tableId);
+      console.log(curTable)
+      handletableclick(tableId);
+    }
+  }
   const handletableclick = (tableId) => {
 
     // const socketInstance = io('http://localhost:3000');
+
     console.log("clicked table " , tableId)
-    socket.emit('join-table', {tableId,username});
-    navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-            .then((stream) => {
-                console.log(stream)
-                var madiaRecorder = new MediaRecorder(stream);
-                var audioChunks = [];
+    
+      socket.emit('join-table', {tableId,username});
+      navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+      .then((stream) => {
+        // console.log(stream)
+        var madiaRecorder = new MediaRecorder(stream);
+        var audioChunks = [];
         
-                madiaRecorder.addEventListener("dataavailable", function (event) {
-                  if(pushToTalk){
-                    console.log(pushToTalk);
-                    audioChunks.push(event.data);
+        madiaRecorder.addEventListener("dataavailable", function (event) {
+          if(pushToTalk){
+            console.log(pushToTalk);
+            audioChunks.push(event.data);
                   }
-                  console.log(audioChunks);
+                  // console.log(audioChunks);
                     
                 });
         
@@ -205,8 +229,11 @@ function Page() {
                     fileReader.readAsDataURL(audioBlob);
                     fileReader.onloadend = function () {
                         var base64String = fileReader.result;
-                        console.log("emitung");
-                        socket.emit("audioStream", {base64String,tableId });
+                        if(pushToTalk){
+
+                          console.log("emitung");
+                          socket.emit("audioStream", {base64String,tableId });
+                        }
                     };
         
                     madiaRecorder.start();
@@ -247,6 +274,10 @@ function Page() {
   const handleLeaveTable = (tableId) =>{
     socket.emit('leave-table', {tableId,username});
   } 
+
+
+  
+
   
 
   return (
@@ -276,9 +307,11 @@ function Page() {
               <Profile user={user || localUserRef.current} />
               <div className="mapCover">
                 <Mapp />
-                <button onClick={()=>handletableclick(1)}>table 1</button>
-              <button onClick={()=>handletableclick(2)}>table 2</button>
-              <button onClick={()=>handletableclick(3)}>table 3</button>
+                <button onClick={()=>handleJoinTable(1)}>table 1</button>
+              <button onClick={()=>handleJoinTable(2)}>table 2</button>
+              <button onClick={()=>handleJoinTable(3)}>table 3</button>
+              <button onClick={()=>handleLeaveTable()}>leave</button>
+
               {/* <button onClick={()=>handleLeaveTable()}>table 3</button> */}
               <button onClick={()=>{
                 pushToTalk = !pushToTalk;

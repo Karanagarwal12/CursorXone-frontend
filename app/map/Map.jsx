@@ -1,9 +1,11 @@
 import { useRef } from 'react';
 import './map.scss';
 import { useUserContext } from '../context/UserContext';
+import tableimg from '../../assets/table.png';
+import Image from 'next/image';
 
 export default function Map() {
-    const {user} = useUserContext();
+    const { user } = useUserContext();
     const map = useRef();
     const mapCloseBtn = useRef();
 
@@ -27,8 +29,8 @@ export default function Map() {
             newHeight = screenWidth / aspectRatio;
         }
 
-        map.current.style.height = `${newHeight*9/10}px`;
-        map.current.style.width =  `${newWidth*9/10}px`;
+        map.current.style.height = `${newHeight * 9 / 10}px`;
+        map.current.style.width = `${newWidth * 9 / 10}px`;
         // map.current.style.aspectRatio = '1920/1080';
         map.current.style.right = '5%';
         map.current.style.bottom = '5%';
@@ -51,7 +53,15 @@ export default function Map() {
     return (
         <div id="map" ref={map} onClick={mapOpen}>
             <div id="allCursPos">
-
+                {[1, 2, 3, 4, 5, 6].map(number => (
+                    <div key={number} className="table">
+                        <Image
+                            src={tableimg}
+                            alt={`table ${number}`}
+                            priority
+                        />
+                    </div>
+                ))}
             </div>
             <div className="close" onClick={mapClose} ref={mapCloseBtn}></div>
         </div>

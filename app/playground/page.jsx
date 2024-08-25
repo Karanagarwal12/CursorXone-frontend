@@ -13,7 +13,7 @@ import tableimg from "../../assets/table.png";
 
 function Page() {
   // var pushToTalk = false;
-  const [pushToTalk,setpushToTalk] = useState(false)
+  const [pushToTalk, setpushToTalk] = useState(false)
   const pushToTalkRef = useRef(pushToTalk);
   const [curTable, setCurTable] = useState(-1);
   const cur = useRef();
@@ -204,7 +204,7 @@ function Page() {
   if (!localUserRef.current && !user) {
     return <div>Loading...</div>;
   }
-  useEffect(()=>{
+  useEffect(() => {
 
   });
 
@@ -237,7 +237,7 @@ function Page() {
         var audioChunks = [];
 
         madiaRecorder.addEventListener("dataavailable", function (event) {
-          console.log("data " , pushToTalkRef.current);
+          console.log("data ", pushToTalkRef.current);
           if (pushToTalkRef.current) {
             audioChunks.push(event.data);
           }
@@ -251,7 +251,7 @@ function Page() {
           fileReader.readAsDataURL(audioBlob);
           fileReader.onloadend = function () {
             var base64String = fileReader.result;
-            if ( pushToTalkRef.current) {
+            if (pushToTalkRef.current) {
               console.log("emitung");
               socket.emit("audioStream", { base64String, tableId, username });
               console.log("emited")
@@ -348,44 +348,34 @@ function Page() {
             </div>
           </div>
           <div className="allCursors" ref={allMouse}>
-            <div className="table">
-              <div className="number">{table && table.hasOwnProperty("1") && table["1"].length} </div>
-              <Image src={tableimg} alt="table" onClick={() => handleJoinTable(1)} priority />
-              <button
-                className="buttonleave"
-                onClick={() => handleLeaveTable(1)}
-              >
-                leave table
-              </button>
-              <button
-                className="buttonleave"
-                onClick={() => handlegloabalMessage()}
-              >
-                send message
-              </button>
-            </div>
-            <div className="table">
-              <div className="number">{table && table.hasOwnProperty("2") && table["2"].length} </div>
-              <Image src={tableimg} alt="table" onClick={() => handleJoinTable(2)} priority />
-              <button
-                className="buttonleave"
-                onClick={() => handleLeaveTable(2)}
-              >
-                leave table
-              </button>
-
-            </div>
-            <div className="table">
-              <div className="number">{table && table.hasOwnProperty("3") && table["3"].length} </div>
-              <Image src={tableimg} alt="table" onClick={() => handleJoinTable(3)} priority />
-              <button
-                className="buttonleave"
-                onClick={() => handleLeaveTable(3)}
-              >
-                leave table
-              </button>
-            </div>
-
+            {[1, 2, 3, 4, 5, 6].map(number => {
+              const [isPeopleOpen, setIsPeopleOpen] = useState(false);
+              return (
+                <div key={number} className="table">
+                  <div className="number" onClick={() => setIsPeopleOpen(prev => !prev)}>
+                    {isPeopleOpen &&
+                      (<div>
+                        {table && table.hasOwnProperty(number) ? table[number].map((person,i)=> <div key={i} className="person">{person?.username}</div>) : "No User Connected"}
+                      </div>)
+                      ||
+                      (table && table.hasOwnProperty(number) ? table[number].length : 0)
+                    }
+                  </div>
+                  <Image
+                    src={tableimg}
+                    alt={`table ${number}`}
+                    onClick={() => handleJoinTable(number)}
+                    priority
+                  />
+                  <button
+                    className="buttonleave"
+                    onClick={() => handleLeaveTable(number)}
+                  >
+                    Leave table
+                  </button>
+                </div>
+              );
+            })}
 
           </div>
         </>

@@ -18,32 +18,55 @@
       background-size: contain;
       pointer-events: all;
     }
-    .table{
+    .table {
       pointer-events: all;
-      width: 200px;
+      width: 350px;
 
-    }
-    .table:nth-child(1) {
-      position: absolute;
-      top: 150px;
-      left: 300px;
-    }
-    .table:nth-child(2) {
-      position: absolute;
-      top: 1000px;
-      left: 300px;
-    }
-    .table:nth-child(3) {
-      position: absolute;
-      top: 550px;
-      left: 1000px;
-    }
-    .buttonleave{
-      // position: absolute;
-      // pointer-events: all;
-      // // top: 500px;
-      // top: 500px;
-      
+      &>.number{
+        width: 45px;
+        border-radius: 50%;
+        font-weight: 600;
+        font-size: 35px;
+        line-height: 45px;
+        background-color: snow;
+        text-align: center;
+        transform: translate(300px,50px);
+      }
+      &:nth-child(1) {
+        position: absolute;
+        top: 600px;
+        left: 1300px;
+      }
+  
+      &:nth-child(2) {
+        position: absolute;
+        top: 2580px;
+        left: 6560px;
+      }
+  
+      &:nth-child(3) {
+        position: absolute;
+        top: 7800px;
+        left: 4200px;
+      }
+  
+      &:nth-child(4) {
+        position: absolute;
+        top: 6500px;
+        left: 15500px;
+      }
+  
+      &:nth-child(5) {
+        position: absolute;
+        top: 2000px;
+        left: 13000px;
+      }
+  
+      &:nth-child(6) {
+        position: absolute;
+        top: 9100px;
+        left: 10000px;
+      }
     }
   }
   .csr {

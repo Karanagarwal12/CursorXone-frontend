@@ -11,6 +11,7 @@
     height: 15vh;
     width: 15vh;
     transition: all 0.3s ease-in-out;
+    overflow: hidden;
     & > .close {
       height: 100px;
       width: 100px;
@@ -31,6 +32,45 @@
         width: 50px;
         position: absolute;
         object-fit: contain;
+      }
+      .table {
+        pointer-events: all;
+        width: 150px;
+        &:nth-child(1) {
+          position: absolute;
+          top: 33px;
+          left: 70px;
+        }
+    
+        &:nth-child(2) {
+          position: absolute;
+          top: 200px;
+          left: 500px;
+        }
+    
+        &:nth-child(3) {
+          position: absolute;
+          top: 600px;
+          left: 300px;
+        }
+    
+        &:nth-child(4) {
+          position: absolute;
+          top: 500px;
+          left: 1200px;
+        }
+    
+        &:nth-child(5) {
+          position: absolute;
+          top: 150px;
+          left: 1000px;
+        }
+    
+        &:nth-child(6) {
+          position: absolute;
+          top: 700px;
+          left: 750px;
+        }
       }
     }
   }

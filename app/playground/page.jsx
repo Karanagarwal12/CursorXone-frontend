@@ -12,7 +12,7 @@ import Image from 'next/image';
 
 
 function Page() {
-
+  var push = false
   const cur = useRef();
   const outer = useRef();
   const { user, setUser, joinedUsers, setJoinedUsers } = useUserContext();
@@ -88,7 +88,8 @@ function Page() {
   }
   useEffect(() => {
     // const socketInstance = io('http://192.168.127.96:5000');
-    const socketInstance = io('http://103.209.145.248:3000');
+    // const socketInstance = io('http://103.209.145.248:3000');
+    const socketInstance = io('http://172.70.101.255:3000');
     // const socketInstance = io('http://192.168.18.96:5000');
     // const socketInstance = io('http://172.70.100.243:5000');
 
@@ -175,6 +176,79 @@ function Page() {
   if (!localUserRef.current && !user) {
     return <div>Loading...</div>
   }
+
+
+  const handletableclick = (tableId) => {
+
+    // const socketInstance = io('http://localhost:3000');
+    console.log("clicked table " , tableId)
+    socket.emit('join-table', {tableId,username});
+    navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+            .then((stream) => {
+                console.log(stream)
+                var madiaRecorder = new MediaRecorder(stream);
+                var audioChunks = [];
+        
+                madiaRecorder.addEventListener("dataavailable", function (event) {
+                  if(push){
+                    console.log(push);
+                    audioChunks.push(event.data);
+                  }
+                  console.log(audioChunks);
+                    
+                });
+        
+                madiaRecorder.addEventListener("stop", function () {
+                    var audioBlob = new Blob(audioChunks);
+                    audioChunks = [];
+                    var fileReader = new FileReader();
+                    fileReader.readAsDataURL(audioBlob);
+                    fileReader.onloadend = function () {
+                        var base64String = fileReader.result;
+                        console.log("emitung");
+                        socket.emit("audioStream", {base64String,tableId });
+                    };
+        
+                    madiaRecorder.start();
+                    setTimeout(function () {
+                        madiaRecorder.stop();
+                    }, 1000);
+                });
+                madiaRecorder.start();
+                setTimeout(function () {
+                    madiaRecorder.stop();
+                }, 1000);
+            })
+            .catch((error) => {
+                console.error('Error capturing audio.', error);
+            });
+    socket.on('audioStream', (audioData) => {
+      console.log("tab",audioData.tableId);
+      console.log(audioData.base64String);
+
+      audioData = audioData.base64String
+        var newData = audioData.split(";");
+        console.log(newData);
+        newData[0] = "data:audio/ogg;";
+        newData = newData[0] + newData[1];
+        
+        var audio = new Audio(newData);
+        console.log(audio);
+        if (!audio || document.hidden || audio.src == "data:audio/ogg;base64," ){
+          return;
+        }
+        
+        audio.play();
+      
+  });
+
+  }
+
+  const handleLeaveTable = (tableId) =>{
+    socket.emit('leave-table', {tableId,username});
+  } 
+  
+
   return (
 
     <div className="playground"
@@ -202,6 +276,14 @@ function Page() {
               <Profile user={user || localUserRef.current} />
               <div className="mapCover">
                 <Mapp />
+                <button onClick={()=>handletableclick(1)}>table 1</button>
+              <button onClick={()=>handletableclick(2)}>table 2</button>
+              <button onClick={()=>handletableclick(3)}>table 3</button>
+              {/* <button onClick={()=>handleLeaveTable()}>table 3</button> */}
+              <button onClick={()=>{
+                push = !push;
+                console.log(push);
+              }}>talk</button>
               </div>
             </div>
           </div>

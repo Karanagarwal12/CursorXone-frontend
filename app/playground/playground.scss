@@ -18,6 +18,33 @@
       background-size: contain;
       pointer-events: all;
     }
+    .table{
+      pointer-events: all;
+      width: 200px;
+
+    }
+    .table:nth-child(1) {
+      position: absolute;
+      top: 150px;
+      left: 300px;
+    }
+    .table:nth-child(2) {
+      position: absolute;
+      top: 1000px;
+      left: 300px;
+    }
+    .table:nth-child(3) {
+      position: absolute;
+      top: 550px;
+      left: 1000px;
+    }
+    .buttonleave{
+      // position: absolute;
+      // pointer-events: all;
+      // // top: 500px;
+      // top: 500px;
+      
+    }
   }
   .csr {
     height: 100px;

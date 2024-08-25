@@ -12,7 +12,7 @@ import Image from 'next/image';
 
 
 function Page() {
-  var push = false
+  var pushToTalk = false
   const cur = useRef();
   const outer = useRef();
   const { user, setUser, joinedUsers, setJoinedUsers } = useUserContext();
@@ -190,8 +190,8 @@ function Page() {
                 var audioChunks = [];
         
                 madiaRecorder.addEventListener("dataavailable", function (event) {
-                  if(push){
-                    console.log(push);
+                  if(pushToTalk){
+                    console.log(pushToTalk);
                     audioChunks.push(event.data);
                   }
                   console.log(audioChunks);
@@ -281,8 +281,8 @@ function Page() {
               <button onClick={()=>handletableclick(3)}>table 3</button>
               {/* <button onClick={()=>handleLeaveTable()}>table 3</button> */}
               <button onClick={()=>{
-                push = !push;
-                console.log(push);
+                pushToTalk = !pushToTalk;
+                console.log(pushToTalk);
               }}>talk</button>
               </div>
             </div>

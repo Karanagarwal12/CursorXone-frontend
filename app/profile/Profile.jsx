@@ -3,8 +3,8 @@ import axios from 'axios';
 import './profile.scss';
 import { useUserContext } from '../context/UserContext';
 
-export default function Profile({ user }) {
-    const { joinedUsers, setJoinedUsers, joinedUserDetails, setJoinedUserDetails } = useUserContext();
+export default function Profile() {
+    const { user, joinedUsers, setJoinedUsers, joinedUserDetails, setJoinedUserDetails } = useUserContext();
     const profile = useRef();
     const prImg = useRef();
     const [curUser, setCurUser] = useState(user);
@@ -44,10 +44,10 @@ export default function Profile({ user }) {
         const elementId = event.target.id;
         console.log("Handling Click:", curUsername, elementId);
 
-        if (curUsername !== elementId) {
-            setCurUsername(elementId);  // Update username
+        if (curUsername == elementId) {
             setIsOpened(true);          // Open profile
         } else {
+            setCurUsername(elementId);  // Update username
             setIsOpened(prevState => !prevState);  // Toggle profile visibility
         }
     };
@@ -61,7 +61,6 @@ export default function Profile({ user }) {
         }
     };
 
-    // Setup and cleanup event listeners for cursor elements
     useEffect(() => {
         const elements = document.querySelectorAll('.otherCursor');
 
@@ -69,6 +68,26 @@ export default function Profile({ user }) {
             element.addEventListener('click', handleCurClick);
         });
 
+        if (joinedUsers.length > 0) {
+            const newJoinedUser = joinedUsers[joinedUsers.length - 1]; // Get the last user added
+
+            if (!joinedUserDetails[newJoinedUser]) { // Check if the user details are not already fetched
+                axios.post('http://103.209.145.248:3000/users/', { username: newJoinedUser })
+                    .then(response => {
+                        elements[elements.length - 1].style.background = `url(${response.data.body?.currentimage}) no-repeat`;
+                        elements[elements.length - 1].style.backgroundSize = `contain`;
+                        document.getElementById(`${newJoinedUser}-map`).src = response.data.body?.currentimage;
+                        setJoinedUserDetails(prevDetails => ({
+                            ...prevDetails,
+                            [newJoinedUser]: response.data.body,
+                        }));
+                    })
+                    .catch(error => {
+                        console.error('Error fetching data:', error);
+                    });
+            }
+        }
+        // Cleanup event listeners when the component unmounts
         return () => {
             elements.forEach(element => {
                 element.removeEventListener('click', handleCurClick);

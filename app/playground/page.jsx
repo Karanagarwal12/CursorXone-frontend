@@ -34,6 +34,8 @@ function Page() {
 
   const curImg = user?.currentimage || localUserRef.current?.currentimage;
 
+  const [messages, setmessages] = useState([{ text: "enter a message gloabally", username: "admin" }]);
+
   useEffect(() => {
     localUserRef.current = localStorage.getItem("userD");
     if (localUserRef.current) {
@@ -92,7 +94,8 @@ function Page() {
     // const socketInstance = io('http://192.168.127.96:5000');
     // const socketInstance = io('http://103.209.145.248:3000');
     // const socketInstance = io("http://172.70.101.255:3000");
-    const socketInstance = io("http://localhost:3000");
+    // const socketInstance = io("http://localhost:3000");
+    const socketInstance = io("http://192.168.112.96:3000");
     // const socketInstance = io('http://192.168.18.96:5000');
     // const socketInstance = io('http://172.70.100.243:5000');
 
@@ -120,13 +123,18 @@ function Page() {
       // console.log(`Received cursor position for ${username}:`, cursorPos);
       allMouseMove({ username, cursorPos, mapParent });
     });
+    socketInstance.on("messageResponse", ({ text, username }) => {
+      setmessages([...messages, { text, username }]);
+      console.log("message by ", username);
+      console.log(text);
+    })
 
     socketInstance.on("connected-users-table", (table) => {
       setTable(table);
       console.log(table);
       if (table.hasOwnProperty("1")) {
         let lengthOfArray1 = table["1"].length;
-        console.log(lengthOfArray1); 
+        console.log(lengthOfArray1);
       } else {
         console.log("Key '1' does not exist.");
       }
@@ -199,7 +207,7 @@ function Page() {
     if (curTable != -1) {
       // handleLeaveTable(curTable);
       setCurTable(tableId);
-      console.log("koining table" , tableId);
+      console.log("koining table", tableId);
       console.log(tableId);
       // console.log(curTable);
       handletableclick(tableId);
@@ -239,8 +247,8 @@ function Page() {
             var base64String = fileReader.result;
             if (pushToTalk) {
               console.log("emitung");
-              socket.emit("audioStream", { base64String, tableId ,username });
-              console.log("emited") 
+              socket.emit("audioStream", { base64String, tableId, username });
+              console.log("emited")
             }
           };
 
@@ -263,7 +271,7 @@ function Page() {
       console.log(audioData.username);
       console.log(audioData);
 
-      if(audioData.username == username){
+      if (audioData.username == username) {
         return;
       }
       audioData = audioData.base64String;
@@ -280,10 +288,15 @@ function Page() {
 
       audio.play();
     });
-  };
 
+  };
+  const handlegloabalMessage = () => {
+    var text = "karan gandu";
+    console.log("sending message");
+    socket.emit('message-global', { text, username });
+  }
   const handleLeaveTable = (tableId) => {
-    console.log("leaving table " , tableId);
+    console.log("leaving table ", tableId);
     socket.emit("leave-table", { tableId, username });
   };
 
@@ -293,8 +306,7 @@ function Page() {
       onMouseEnter={() => (cur.current.style.display = "block")}
       onMouseLeave={() => (cur.current.style.display = "none")}
       onMouseMove={(e) =>
-        (cur.current.style.transform = `translate(${e.clientX - 17}px, ${
-          e.clientY - 40
+      (cur.current.style.transform = `translate(${e.clientX - 17}px, ${e.clientY - 40
         }px)`)
       }
     >
@@ -308,6 +320,7 @@ function Page() {
             width={100}
             height={100}
             ref={cur}
+            priority
           />
           <div className="outer" ref={outer}>
             <div className="front">
@@ -329,37 +342,44 @@ function Page() {
           </div>
           <div className="allCursors" ref={allMouse}>
             <div className="table">
-              <div className="number">{table && table.hasOwnProperty("1") && table["1"].length} </div> 
-              <Image src={tableimg} onClick={() => handleJoinTable(1)} />
+              <div className="number">{table && table.hasOwnProperty("1") && table["1"].length} </div>
+              <Image src={tableimg} alt="table" onClick={() => handleJoinTable(1)} priority />
               <button
-              className="buttonleave"
-              onClick={() => handleLeaveTable(1)}
-            >
-              leave table
-            </button>
+                className="buttonleave"
+                onClick={() => handleLeaveTable(1)}
+              >
+                leave table
+              </button>
+              <button
+                className="buttonleave"
+                onClick={() => handlegloabalMessage()}
+              >
+                send message
+              </button>
             </div>
             <div className="table">
-              <div className="number">{table && table.hasOwnProperty("2") && table["2"].length} </div> 
-              <Image src={tableimg} onClick={() => handleJoinTable(2)} />
+              <div className="number">{table && table.hasOwnProperty("2") && table["2"].length} </div>
+              <Image src={tableimg} alt="table" onClick={() => handleJoinTable(2)} priority />
               <button
-              className="buttonleave"
-              onClick={() => handleLeaveTable(2)}
-            >
-              leave table
-            </button>
+                className="buttonleave"
+                onClick={() => handleLeaveTable(2)}
+              >
+                leave table
+              </button>
+
             </div>
             <div className="table">
-              <div className="number">{table && table.hasOwnProperty("3") && table["3"].length} </div> 
-              <Image src={tableimg} onClick={() => handleJoinTable(3)} />
+              <div className="number">{table && table.hasOwnProperty("3") && table["3"].length} </div>
+              <Image src={tableimg} alt="table" onClick={() => handleJoinTable(3)} priority />
               <button
-              className="buttonleave"
-              onClick={() => handleLeaveTable(3)}
-            >
-              leave table
-            </button>
+                className="buttonleave"
+                onClick={() => handleLeaveTable(3)}
+              >
+                leave table
+              </button>
             </div>
-          
-            
+
+
           </div>
         </>
       )}

@@ -42,14 +42,10 @@ export default function Profile() {
     // Handle click on cursor elements
     const handleCurClick = (event) => {
         const elementId = event.target.id;
-        console.log("Handling Click:", curUsername, elementId);
+        // console.log("Handling Click:", curUsername, elementId);
 
-        if (curUsername == elementId) {
-            setIsOpened(true);          // Open profile
-        } else {
-            setCurUsername(elementId);  // Update username
-            setIsOpened(prevState => !prevState);  // Toggle profile visibility
-        }
+        setCurUsername(elementId);  // Update username
+        setIsOpened(prevState => !prevState);  // Toggle profile visibility
     };
 
     // Handle click on profile image
@@ -98,12 +94,10 @@ export default function Profile() {
     // Adjust profile display based on isOpened state
     useEffect(() => {
         if (profile.current) {
-            profile.current.style.height = isOpened ? '90vh' : '0vh';
-            profile.current.style.width = isOpened ? '30vw' : '0vw';
-            profile.current.style.padding = isOpened ? '2vw' : '0vw';
-            if (prImg.current) {
-                prImg.current.style.opacity = isOpened ? 0 : 1;
-            }
+            profile.current.style.transform = isOpened ? 'translateX(0)' : 'translateX(-35vw)';
+            // if (prImg.current) {
+            //     prImg.current.style.opacity = isOpened ? 0 : 1;
+            // }
         }
     }, [isOpened]);
 

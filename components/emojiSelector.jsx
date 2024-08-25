@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+
 const emojis = [
   {
     key: "1f600",
@@ -1021,7 +1022,7 @@ const emojis = [
     key: "2728",
     value: "✨"
   },
-    {
+  {
     key: "2648",
     value: "♈"
   },
@@ -1111,19 +1112,17 @@ const EmojiDropdown = ({
   );
 };
 
-const EmojiDisplay = ({ selectedEmoji }) => {
-
- 
+const EmojiDisplay = ({ selectedEmoji, ids }) => {
   return (
-    <div className="selected-emoji">
+    <div className="selected-emoji" id={ids}>
       {selectedEmoji && (
         <div key={selectedEmoji}>
-            <h1>{selectedEmoji}</h1>
-              <DotLottieReact
-      src={`https://fonts.gstatic.com/s/e/notoemoji/latest/${selectedEmoji}/lottie.json`}
-      loop
-      autoplay
-    />
+          <h1>{selectedEmoji}</h1>
+          <DotLottieReact
+            src={`https://fonts.gstatic.com/s/e/notoemoji/latest/${selectedEmoji}/lottie.json`}
+            loop
+            autoplay
+          />
         </div>
       )}
     </div>
@@ -1158,4 +1157,4 @@ const EmojiSelector = () => {
   );
 };
 
-export { EmojiSelector , EmojiDisplay};
+export { EmojiSelector, EmojiDisplay };

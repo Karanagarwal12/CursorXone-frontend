@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import ReactDOM from 'react-dom';
 import { useRouter, useSearchParams } from "next/navigation";
 import Mapp from "../map/Map";
 import Profile from "../profile/Profile";
@@ -18,8 +19,10 @@ import { EmojiSelector, EmojiDisplay } from '@/components/emojiSelector';
 function Page() {
   // var pushToTalk = false;
   const [pushToTalk, setpushToTalk] = useState(false)
-  const [emoji , setemoji] = useState(null);
-  const [emojiText , setemojiText] = useState(null);
+  const [allEmojis, setAllEmojis] = useState({});
+
+  const [emoji, setemoji] = useState(null);
+  const [emojiText, setemojiText] = useState(null);
   const pushToTalkRef = useRef(pushToTalk);
   const [curTable, setCurTable] = useState(-1);
   const cur = useRef();
@@ -95,10 +98,42 @@ function Page() {
       childElement.style.top = `${e.cursorPos.y - 40}px`;
       childElement.style.left = `${e.cursorPos.x - 17}px`;
 
+      allEmojis[e.username] = null;
       // Append the new element to the parent element
       allMouse.current.appendChild(childElement);
+
+      if (childElement) {
+        ReactDOM.render(
+          <EmojiDisplay selectedEmoji={allEmojis[e.username]} ids={e.username+"-emoji"} />,
+          childElement
+        );
+      }
     }
   };
+
+  const handleEmojiRxn = (emoji) => {
+    setAllEmojis(prev => {
+      // Create a copy of the previous state to avoid direct mutation
+      const updatedEmojis = { ...prev, [emoji.username]: emoji.emojiText };
+      
+      // Return the updated state
+      return updatedEmojis;
+    });
+  
+    setTimeout(() => {
+      setAllEmojis(prev => {
+        // Create a copy of the previous state
+        const updatedEmojis = { ...prev };
+        
+        // Set the specific emoji to null
+        updatedEmojis[emoji.username] = null;
+  
+        // Return the updated state
+        return updatedEmojis;
+      });
+    }, 5000);
+  };
+  
   useEffect(() => {
     // const socketInstance = io('http://192.168.127.96:5000');
     // const socketInstance = io('http://103.209.145.248:3000');
@@ -128,7 +163,7 @@ function Page() {
       socketInstance.emit("connected-users", clients);
     });
 
-    socketInstance.on("remote-cursor-move", ({ username, cursorPos  }) => {
+    socketInstance.on("remote-cursor-move", ({ username, cursorPos }) => {
       // console.log(`Received cursor position for ${username}:`, cursorPos);
       allMouseMove({ username, cursorPos, mapParent });
     });
@@ -138,10 +173,8 @@ function Page() {
       console.log(text);
     })
 
-    socketInstance.on("emoji-changed", (emoji)=>{
-      setemoji(emoji);
-    })
-    
+    socketInstance.on("emoji-changed", (emoji) => handleEmojiRxn(emoji));
+
 
     socketInstance.on("connected-users-table", (table) => {
       setTable(table);
@@ -173,7 +206,7 @@ function Page() {
         x: htmlElem.scrollLeft + event.clientX,
         y: htmlElem.scrollTop + event.clientY,
       };
-      socket.emit("cursor-move", { roomId, username, cursorPos  });
+      socket.emit("cursor-move", { roomId, username, cursorPos });
     };
     const emitOnScroll = (e) => {
       const cursorPos = {
@@ -190,7 +223,7 @@ function Page() {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("scroll", handleMouseMove);
     };
-  }, [socket, roomId, username ]);
+  }, [socket, roomId, username]);
 
   const handleConnectedUsers = (users) => {
     setClients(users);
@@ -215,23 +248,20 @@ function Page() {
   if (!localUserRef.current && !user) {
     return <div>Loading...</div>;
   }
-  useEffect(() => {
-
-  });
 
   const handleJoinTable = (tableId) => {
     console.log(curTable);
     if (curTable != -1) {
       // handleLeaveTable(curTable);
       setCurTable(tableId);
-      console.log("koining table", tableId);
-      console.log(tableId);
+      // console.log("koining table", tableId);
+      // console.log(tableId);
       // console.log(curTable);
       handletableclick(tableId);
     } else {
-      console.log(tableId);
+      // console.log(tableId);
       setCurTable(tableId);
-      console.log(curTable);
+      // console.log(curTable);
       handletableclick(tableId);
     }
   };
@@ -317,8 +347,8 @@ function Page() {
     socket.emit("leave-table", { tableId, username });
   };
 
-  const handleEmoji = () => {
-    socket.emit('emoji', {emojiText , username});
+  const handleEmoji = (e) => {
+    socket.emit('emoji', { emojiText:e.text, username:e.username });
   }
 
   return (
@@ -345,23 +375,13 @@ function Page() {
           />
           <div className="outer" ref={outer}>
             <div className="front">
+              {/* <EmojiDisplay selectedEmoji={"1f92f"} /> */}
               <Profile user={user || localUserRef.current} />
-              <div className="globalChat navBtn"><MessageIcon className="globalChatIn inn" />
+              <div className="globalChat navBtn"><MessageIcon className="globalChatIn inn" onClick={()=>handleEmoji({text:"1f92f",username:"Anuj12"})} />
               </div>
               <button onClick={() => { setpushToTalk(!pushToTalk); console.log(pushToTalk) }} className="pushTalk navBtn">{!pushToTalk && <MicOffIcon className="mic inn" /> || <MicIcon className="mic" />}</button>
               <div className="mapCover">
                 <Mapp />
-
-                {/* <button onClick={()=>handleLeaveTable()}>table 3</button> */}
-                <button
-                  onClick={() => {
-                    // pushToTalk = !pushToTalk;
-                    setpushToTalk(!pushToTalk);
-                    console.log(pushToTalk);
-                  }}
-                >
-                  talk
-                </button>
               </div>
             </div>
           </div>
@@ -372,9 +392,7 @@ function Page() {
                 <div key={number} className="table">
                   <div className="number" onClick={() => setIsPeopleOpen(prev => !prev)}>
                     {isPeopleOpen &&
-                      (<div>
-                        {table && table.hasOwnProperty(number) ? table[number].map((person,i)=> <div key={i} className="person">{person?.username}</div>) : "No User Connected"}
-                      </div>)
+                      ((table && table.hasOwnProperty(number) && table[number].length) ? table[number].map((person, i) => <div key={i} className="person">{person?.username}</div>) : "No User Connected")
                       ||
                       (table && table.hasOwnProperty(number) ? table[number].length : 0)
                     }

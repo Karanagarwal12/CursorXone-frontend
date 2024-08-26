@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import ReactDOM from 'react-dom';
+import { createPortal } from 'react-dom';
+import ReactDOM from 'react-dom/client';
 import { useRouter, useSearchParams } from "next/navigation";
 import Mapp from "../map/Map";
 import Profile from "../profile/Profile";
@@ -20,6 +21,7 @@ function Page() {
   // var pushToTalk = false;
   const [pushToTalk, setpushToTalk] = useState(false)
   const [allEmojis, setAllEmojis] = useState({});
+  const [emojis, setEmojis] = useState({}); 
 
   const [emoji, setemoji] = useState(null);
   const [emojiText, setemojiText] = useState(null);
@@ -61,6 +63,7 @@ function Page() {
   }, [router]);
 
   const allMouseMove = (e) => {
+   
     let childElementMap = e.mapParent.querySelector(`#${e.username}-map`);
     // cursors.set(e.username, e.cursorPos);
     if (childElementMap) {
@@ -81,13 +84,16 @@ function Page() {
       // Append the new element to the parent element
       e.mapParent.appendChild(childElementMap);
     }
+    
     let childElement = allMouse.current.querySelector(`#${e.username}`);
     if (e.username == username) return;
     if (childElement) {
+      
       // If the child exists, apply the styles to it
       childElement.style.top = `${e.cursorPos.y - 40}px`;
       childElement.style.left = `${e.cursorPos.x - 17}px`;
     } else {
+
       // If the child doesn't exist, create a new element
       childElement = document.createElement("div");
       childElement.id = e.username;
@@ -98,48 +104,31 @@ function Page() {
       childElement.style.top = `${e.cursorPos.y - 40}px`;
       childElement.style.left = `${e.cursorPos.x - 17}px`;
 
-      allEmojis[e.username] = null;
+      // allEmojis[e.username] = null;
       // Append the new element to the parent element
       allMouse.current.appendChild(childElement);
-
-      if (childElement) {
-        ReactDOM.render(
-          <EmojiDisplay selectedEmoji={allEmojis[e.username]} ids={e.username+"-emoji"} />,
-          childElement
-        );
-      }
+      // const emojiel = document.createElement("div");
+      // emojiel.innerHTML = "safkja"
+      // childElement.current.appendChild(emojiel);
+      // console.log(emojis[e.username]);
+      // ReactDOM.createPortal(
+      //   <EmojiDisplay
+      //     selectedEmoji={emojis[e.username]?.emoji}
+      //     ids={`${e.username}-emoji`}
+      //   />,
+      //   emojiContainer
+      // );
+     
     }
   };
 
-  const handleEmojiRxn = (emoji) => {
-    setAllEmojis(prev => {
-      // Create a copy of the previous state to avoid direct mutation
-      const updatedEmojis = { ...prev, [emoji.username]: emoji.emojiText };
-      
-      // Return the updated state
-      return updatedEmojis;
-    });
-  
-    setTimeout(() => {
-      setAllEmojis(prev => {
-        // Create a copy of the previous state
-        const updatedEmojis = { ...prev };
-        
-        // Set the specific emoji to null
-        updatedEmojis[emoji.username] = null;
-  
-        // Return the updated state
-        return updatedEmojis;
-      });
-    }, 5000);
-  };
-  
+ 
   useEffect(() => {
     // const socketInstance = io('http://192.168.127.96:5000');
     // const socketInstance = io('http://103.209.145.248:3000');
     // const socketInstance = io("http://172.70.101.255:3000");
-    // const socketInstance = io("http://localhost:3000");
-    const socketInstance = io("http://192.168.112.96:3000");
+    const socketInstance = io("http://localhost:3000");
+    // const socketInstance = io("http://192.168.112.96:3000");
     // const socketInstance = io('http://192.168.18.96:5000');
     // const socketInstance = io('http://172.70.100.243:5000');
 
@@ -173,7 +162,54 @@ function Page() {
       console.log(text);
     })
 
-    socketInstance.on("emoji-changed", (emoji) => handleEmojiRxn(emoji));
+    socketInstance.on("emoji-changed", (emoji) => {
+      console.log(emoji.username);
+      if (allMouse.current) {
+        let childElement = allMouse.current.querySelector(`#${emoji.username}`);
+        console.log(childElement);
+      
+        if (childElement) {
+          // Check if the emoji element already exists
+          const existingEmojii = childElement.querySelector(`.emojii-${emoji.username}`);
+          console.log(existingEmojii);
+      
+          if (!existingEmojii) {
+            // Create a new div for the emoji
+            const emojiel = document.createElement('div');
+            emojiel.className = `emojii-${emoji.username}`;
+      
+            // Initialize React root for the new div
+            const root = ReactDOM.createRoot(emojiel);
+      
+            // Render the EmojiDisplay component into the new div
+            root.render(<EmojiDisplay selectedEmoji={emoji.emojiText} />);
+      
+            // Append the new div to the target element
+            childElement.appendChild(emojiel);
+          } else {
+            // If needed, handle the case where the element already exists
+            // e.g., update or refresh the existing component
+            console.log('Emoji already exists');
+            existingEmojii.remove();
+            console.log('Emoji removed');
+
+            const emojiel = document.createElement('div');
+            emojiel.className = `emojii-${emoji.username}`;
+      
+            // Initialize React root for the new div
+            const root = ReactDOM.createRoot(emojiel);
+      
+            // Render the EmojiDisplay component into the new div
+            root.render(<EmojiDisplay selectedEmoji={emoji.emojiText} />);
+      
+            // Append the new div to the target element
+            childElement.appendChild(emojiel);
+            
+          }
+        }
+      }
+      
+    });
 
 
     socketInstance.on("connected-users-table", (table) => {
@@ -377,7 +413,7 @@ function Page() {
             <div className="front">
               {/* <EmojiDisplay selectedEmoji={"1f92f"} /> */}
               <Profile user={user || localUserRef.current} />
-              <div className="globalChat navBtn"><MessageIcon className="globalChatIn inn" onClick={()=>handleEmoji({text:"1f92f",username:"Anuj12"})} />
+              <div className="globalChat navBtn"><MessageIcon className="globalChatIn inn" onClick={()=>handleEmoji({text:"1f92f",username})} />
               </div>
               <button onClick={() => { setpushToTalk(!pushToTalk); console.log(pushToTalk) }} className="pushTalk navBtn">{!pushToTalk && <MicOffIcon className="mic inn" /> || <MicIcon className="mic" />}</button>
               <div className="mapCover">

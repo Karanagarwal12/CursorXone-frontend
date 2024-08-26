@@ -1112,9 +1112,9 @@ const EmojiDropdown = ({
   );
 };
 
-const EmojiDisplay = ({ selectedEmoji, ids }) => {
+const EmojiDisplay = ({ selectedEmoji  }) => {
   return (
-    <div className="selected-emoji" id={ids}>
+    <div className="selected-emoji" >
       {selectedEmoji && (
         <div key={selectedEmoji}>
           <h1>{selectedEmoji}</h1>

@@ -103,31 +103,33 @@ export default function Profile() {
 
     return (
         <div id="profile">
-            <div className="inner" ref={profile} onClick={handleProfileClick}>
-                {isOpened && curUser && (
-                    <>
-                        <div className="name">{curUser.name.toUpperCase()}</div>
-                        <div className="bio">{curUser.bio}</div>
-                        <div className="links">
-                            {curUser.socialLinks.map((link, i) => (
-                                <span key={i}>
-                                    <a href={link.link}>{link.text}</a>
-                                </span>
-                            ))}
-                        </div>
-                        <div>
-                            {userImages.length > 0 && userImages.map((image, index) => (
-                                <img
-                                    key={index}
-                                    src={image}
-                                    alt={`User Image ${index + 1}`}
-                                    width={100}
-                                    height={100}
-                                />
-                            ))}
-                        </div>
-                    </>
-                )}
+            <div className="profileDetail" ref={profile} onClick={handleProfileClick}>
+                <div className="inner">
+                    {isOpened && curUser && (
+                        <>
+                            <div className="name">{curUser.name.toUpperCase()}</div>
+                            <div className="bio">{curUser.bio}</div>
+                            <div className="links">
+                                {curUser.socialLinks.map((link, i) => (
+                                    <span key={i}>
+                                        <a href={link.link}>{link.text}</a>
+                                    </span>
+                                ))}
+                            </div>
+                            <div>
+                                {userImages.length > 0 && userImages.map((image, index) => (
+                                    <img
+                                        key={index}
+                                        src={image}
+                                        alt={`User Image ${index + 1}`}
+                                        width={100}
+                                        height={100}
+                                    />
+                                ))}
+                            </div>
+                        </>
+                    )}
+                </div>
             </div>
             <div className='profileImg'>
                 <img

@@ -20,16 +20,32 @@
         }
     }
     
-    &>.inner{
+    &>.profileDetail{
         z-index: 5;
         position: absolute;
         top: 0;
         height: 90vh;
         width: 30vw;
-        padding: 2vw;
+        padding: 0.5vw;
         background-color: snow;
         border-radius: 2vw;
         transform: translateX(-35vw);
         transition: all 0.3s ease-in-out;
+        &>.inner{
+            background-color: #0097fc1a;
+            border: 2px solid #000;
+            height: 100%;
+            width: 100%;
+            border-radius: 1.5vw;
+            padding: 1vw;
+            &>.name{
+                font-size: 2vw;
+                font-weight: 700;
+                margin: 3vw 0;
+            }
+            &>.bio{
+                margin-bottom: 3vw;
+            }
+        }
     }
 }

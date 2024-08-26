@@ -15,16 +15,16 @@ import tableimg from "../../assets/table.png";
 import MicIcon from '@mui/icons-material/Mic';
 import MicOffIcon from '@mui/icons-material/MicOff';
 import MessageIcon from '@mui/icons-material/Message';
-import { EmojiSelector, EmojiDisplay } from '@/components/emojiSelector';
+import SendIcon from '@mui/icons-material/Send';
+import CloseIcon from '@mui/icons-material/Close';
+import { EmojiDropdown, EmojiDisplay } from '@/components/emojiSelector';
 
 function Page() {
   // var pushToTalk = false;
-  const [pushToTalk, setpushToTalk] = useState(false)
-  const [allEmojis, setAllEmojis] = useState({});
-  const [emojis, setEmojis] = useState({}); 
+  const [pushToTalk, setpushToTalk] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [selectedEmoji, setSelectedEmoji] = useState("1f609");
 
-  const [emoji, setemoji] = useState(null);
-  const [emojiText, setemojiText] = useState(null);
   const pushToTalkRef = useRef(pushToTalk);
   const [curTable, setCurTable] = useState(-1);
   const cur = useRef();
@@ -45,11 +45,14 @@ function Page() {
 
   const curImg = user?.currentimage || localUserRef.current?.currentimage;
 
-  const [messages, setmessages] = useState([{ text: "enter a message gloabally", username: "admin" }]);
+  const [messages, setmessages] = useState([{ text: "enter a message gloabally", username: "admin" }, { text: "enter a message gloabally", username: "Karan_12" }]);
 
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const chatbox = useRef();
   useEffect(() => {
     pushToTalkRef.current = pushToTalk;
   }, [pushToTalk]);
+
   useEffect(() => {
     localUserRef.current = localStorage.getItem("userD");
     if (localUserRef.current) {
@@ -63,7 +66,7 @@ function Page() {
   }, [router]);
 
   const allMouseMove = (e) => {
-   
+
     let childElementMap = e.mapParent.querySelector(`#${e.username}-map`);
     // cursors.set(e.username, e.cursorPos);
     if (childElementMap) {
@@ -84,11 +87,11 @@ function Page() {
       // Append the new element to the parent element
       e.mapParent.appendChild(childElementMap);
     }
-    
+
     let childElement = allMouse.current.querySelector(`#${e.username}`);
     if (e.username == username) return;
     if (childElement) {
-      
+
       // If the child exists, apply the styles to it
       childElement.style.top = `${e.cursorPos.y - 40}px`;
       childElement.style.left = `${e.cursorPos.x - 17}px`;
@@ -118,16 +121,16 @@ function Page() {
       //   />,
       //   emojiContainer
       // );
-     
+
     }
   };
 
- 
+
   useEffect(() => {
     // const socketInstance = io('http://192.168.127.96:5000');
-    // const socketInstance = io('http://103.209.145.248:3000');
+    const socketInstance = io('http://103.209.145.248:3000');
     // const socketInstance = io("http://172.70.101.255:3000");
-    const socketInstance = io("http://localhost:3000");
+    // const socketInstance = io("http://localhost:3000");
     // const socketInstance = io("http://192.168.112.96:3000");
     // const socketInstance = io('http://192.168.18.96:5000');
     // const socketInstance = io('http://172.70.100.243:5000');
@@ -167,23 +170,23 @@ function Page() {
       if (allMouse.current) {
         let childElement = allMouse.current.querySelector(`#${emoji.username}`);
         console.log(childElement);
-      
+
         if (childElement) {
           // Check if the emoji element already exists
           const existingEmojii = childElement.querySelector(`.emojii-${emoji.username}`);
           console.log(existingEmojii);
-      
+
           if (!existingEmojii) {
             // Create a new div for the emoji
             const emojiel = document.createElement('div');
             emojiel.className = `emojii-${emoji.username}`;
-      
+
             // Initialize React root for the new div
             const root = ReactDOM.createRoot(emojiel);
-      
+
             // Render the EmojiDisplay component into the new div
             root.render(<EmojiDisplay selectedEmoji={emoji.emojiText} />);
-      
+
             // Append the new div to the target element
             childElement.appendChild(emojiel);
           } else {
@@ -195,20 +198,20 @@ function Page() {
 
             const emojiel = document.createElement('div');
             emojiel.className = `emojii-${emoji.username}`;
-      
+
             // Initialize React root for the new div
             const root = ReactDOM.createRoot(emojiel);
-      
+
             // Render the EmojiDisplay component into the new div
             root.render(<EmojiDisplay selectedEmoji={emoji.emojiText} />);
-      
+
             // Append the new div to the target element
             childElement.appendChild(emojiel);
-            
+
           }
         }
       }
-      
+
     });
 
 
@@ -265,21 +268,30 @@ function Page() {
     setClients(users);
   };
 
-  const leaveRoom = () => {
-    if (!socket) return;
-    socket.emit("leave-room", { roomId, username });
-    router.push("/");
-  };
+  // const leaveRoom = () => {
+  //   if (!socket) return;
+  //   socket.emit("leave-room", { roomId, username });
+  //   router.push("/");
+  // };
 
-  const copyRoomId = () => {
-    navigator.clipboard.writeText(roomId);
-  };
+  // const copyRoomId = () => {
+  //   navigator.clipboard.writeText(roomId);
+  // };
 
   useEffect(() => {
     document.addEventListener("contextmenu", (event) => {
       event.preventDefault();
     });
   }, []);
+
+  const [message, setMessage] = useState('');
+  useEffect(() => {
+    if (chatbox.current) {
+      const chatboxElement = chatbox.current;
+      chatboxElement.style.left = isChatOpen ? '0vw' : '-35vw';
+    }
+  }, [isChatOpen]);
+
 
   if (!localUserRef.current && !user) {
     return <div>Loading...</div>;
@@ -373,10 +385,9 @@ function Page() {
     });
 
   };
-  const handlegloabalMessage = () => {
-    var text = "karan gandu";
+  const handlegloabalMessage = (e) => {
     console.log("sending message");
-    socket.emit('message-global', { text, username });
+    socket.emit('message-global', { text: e.msg, username: e.name });
   }
   const handleLeaveTable = (tableId) => {
     console.log("leaving table ", tableId);
@@ -384,8 +395,66 @@ function Page() {
   };
 
   const handleEmoji = (e) => {
-    socket.emit('emoji', { emojiText:e.text, username:e.username });
+    console.log(e);
+    socket.emit('emoji', { emojiText: e.text, username: e.username });
   }
+  const handleEmojiSelect = (unicodeValue) => {
+    setSelectedEmoji(unicodeValue);
+    handleEmoji({ text: unicodeValue, username: user?.name || localUserRef.current?.name });
+    setIsDropdownOpen(false);
+  };
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen((prevIsOpen) => !prevIsOpen);
+  };
+
+
+
+  const handleSendMessage = () => {
+    if (message.trim()) {
+      handlegloabalMessage({ msg: message.trim(), name: user?.name || localUserRef.current?.name });
+      setMessage('');
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSendMessage();
+    }
+  };
+
+
+  const Table = ({ number }) => {
+    const [isPeopleOpen, setIsPeopleOpen] = useState(false);
+
+    return (
+      <div className="table">
+        <div className="number" onClick={() => setIsPeopleOpen(prev => !prev)}>
+          {isPeopleOpen &&
+            ((table && table.hasOwnProperty(number) && table[number].length)
+              ? table[number].map((person, i) => (
+                <div key={i} className="person">{person?.username}</div>
+              ))
+              : "No User Connected")
+            ||
+            (table && table.hasOwnProperty(number) ? table[number].length : 0)
+          }
+        </div>
+        <Image
+          src={tableimg}
+          alt={`table ${number}`}
+          onClick={() => handleJoinTable(number)}
+          priority
+        />
+        <button
+          className="buttonleave"
+          onClick={() => handleLeaveTable(number)}
+        >
+          Leave table
+        </button>
+      </div>
+    );
+  };
 
   return (
     <div
@@ -411,44 +480,60 @@ function Page() {
           />
           <div className="outer" ref={outer}>
             <div className="front">
-              {/* <EmojiDisplay selectedEmoji={"1f92f"} /> */}
               <Profile user={user || localUserRef.current} />
-              <div className="globalChat navBtn"><MessageIcon className="globalChatIn inn" onClick={()=>handleEmoji({text:"1f92f",username})} />
+              <div className="globalChat navBtn">
+                <MessageIcon className="globalChatIn inn" onClick={() => setIsChatOpen(true)} />
+                <div className="chatBox" ref={chatbox}>
+                  <div className="inner">
+                    <div className="title">Global Chat</div>
+                    <button className="close" onClick={() => setIsChatOpen(false)}><CloseIcon className="close-icon" /></button>
+                    <div className="chats">
+                      {messages.map((msg, i) => (
+                        <div key={i}>
+                          {msg?.username !== (user?.name || localUserRef.current?.name) &&
+                            <div className="msgname" key={`${i}-user`}>{msg?.username}</div>
+                          }
+                          <div className={msg?.username === (user?.name || localUserRef.current?.name) ? "mymsg msg" : "otherMsg msg"}>
+                            {msg.text}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="chatInput">
+                      <input
+                        type="text"
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        onKeyDown={handleKeyPress}
+                        placeholder="Type a message..."
+                        className="chatInputField"
+                      />
+                      <button onClick={handleSendMessage} className="sendButton"><SendIcon /></button>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <button onClick={() => { setpushToTalk(!pushToTalk); console.log(pushToTalk) }} className="pushTalk navBtn">{!pushToTalk && <MicOffIcon className="mic inn" /> || <MicIcon className="mic" />}</button>
+              <div className="emojiSelector navBtn">
+                <EmojiDropdown
+                  isDropdownOpen={isDropdownOpen}
+                  toggleDropdown={toggleDropdown}
+                  selectedEmoji={selectedEmoji}
+                  handleEmojiSelect={handleEmojiSelect}
+                />
+              </div>
+              <button onClick={() => { setpushToTalk(!pushToTalk); console.log(pushToTalk) }} className="pushTalk navBtn">{!pushToTalk && <MicOffIcon className="mic inn" /> || <MicIcon className="mic inn" />}</button>
               <div className="mapCover">
                 <Mapp />
               </div>
             </div>
           </div>
           <div className="allCursors" ref={allMouse}>
-            {[1, 2, 3, 4, 5, 6].map(number => {
-              const [isPeopleOpen, setIsPeopleOpen] = useState(false);
-              return (
-                <div key={number} className="table">
-                  <div className="number" onClick={() => setIsPeopleOpen(prev => !prev)}>
-                    {isPeopleOpen &&
-                      ((table && table.hasOwnProperty(number) && table[number].length) ? table[number].map((person, i) => <div key={i} className="person">{person?.username}</div>) : "No User Connected")
-                      ||
-                      (table && table.hasOwnProperty(number) ? table[number].length : 0)
-                    }
-                  </div>
-                  <Image
-                    src={tableimg}
-                    alt={`table ${number}`}
-                    onClick={() => handleJoinTable(number)}
-                    priority
-                  />
-                  <button
-                    className="buttonleave"
-                    onClick={() => handleLeaveTable(number)}
-                  >
-                    Leave table
-                  </button>
-                </div>
-              );
-            })}
-
+            {[1, 2, 3, 4, 5, 6].map(number => (
+              <Table
+                key={number}
+                number={number}
+              />
+            ))}
           </div>
         </>
       )}

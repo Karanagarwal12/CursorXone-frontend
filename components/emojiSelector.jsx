@@ -1083,7 +1083,6 @@ const emojis = [
 const EmojiDropdown = ({
   isDropdownOpen,
   toggleDropdown,
-  emojis,
   selectedEmoji,
   handleEmojiSelect
 }) => {
@@ -1091,7 +1090,7 @@ const EmojiDropdown = ({
     emojis?.find((emoji) => emoji.key === selectedEmoji)?.value || "";
 
   return (
-    <div className={`emoji-dropdown ${isDropdownOpen ? "open" : ""}`}>
+    <div className={`emoji-dropdown inn ${isDropdownOpen ? "open" : ""}`}>
       <div className="emoji-dropdown-trigger" onClick={toggleDropdown}>
         {currentEmoji}
       </div>
@@ -1129,32 +1128,32 @@ const EmojiDisplay = ({ selectedEmoji  }) => {
   );
 };
 
-const EmojiSelector = () => {
-  const [selectedEmoji, setSelectedEmoji] = useState("1f92f");
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+// const EmojiSelector = () => {
+//   const [selectedEmoji, setSelectedEmoji] = useState("1f92f");
+//   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const handleEmojiSelect = (unicodeValue) => {
-    setSelectedEmoji(unicodeValue);
-    setIsDropdownOpen(false);
-  };
+//   const handleEmojiSelect = (unicodeValue) => {
+//     setSelectedEmoji(unicodeValue);
+//     setIsDropdownOpen(false);
+//   };
 
-  const toggleDropdown = () => {
-    setIsDropdownOpen((prevIsOpen) => !prevIsOpen);
-  };
+//   const toggleDropdown = () => {
+//     setIsDropdownOpen((prevIsOpen) => !prevIsOpen);
+//   };
 
-  return (
-    <div className="emoji-selector">
-      <h2>Select an Emoji...</h2>
-      <EmojiDropdown
-        isDropdownOpen={isDropdownOpen}
-        toggleDropdown={toggleDropdown}
-        emojis={emojis}
-        selectedEmoji={selectedEmoji}
-        handleEmojiSelect={handleEmojiSelect}
-      />
-      {!isDropdownOpen && <EmojiDisplay selectedEmoji={selectedEmoji} />}
-    </div>
-  );
-};
+//   return (
+//     <div className="emoji-selector">
+//       <h2>Select an Emoji...</h2>
+//       <EmojiDropdown
+//         isDropdownOpen={isDropdownOpen}
+//         toggleDropdown={toggleDropdown}
+//         emojis={emojis}
+//         selectedEmoji={selectedEmoji}
+//         handleEmojiSelect={handleEmojiSelect}
+//       />
+//       {!isDropdownOpen && <EmojiDisplay selectedEmoji={selectedEmoji} />}
+//     </div>
+//   );
+// };
 
-export { EmojiSelector, EmojiDisplay };
+export { EmojiDropdown, EmojiDisplay };

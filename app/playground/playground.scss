@@ -131,15 +131,125 @@
         }
       }
       & > .pushTalk {
-        top: calc(100px + 2vw);
+        top: calc(200px + 3vw);
+        z-index: -1;
         .mic {
           font-size: 90px;
         }
       }
       & > .globalChat {
-        top: calc(200px + 3vw);
-        &>.globalChatIn{
+        top: calc(100px + 2vw);
+        & > .globalChatIn {
           font-size: 90px;
+        }
+        & > .chatBox {
+          z-index: 5;
+          position: absolute;
+          top: calc(-100px - 1vw);
+          left: -35vw;
+          height: 90vh;
+          width: 30vw;
+          padding: 0.5vw;
+          background-color: snow;
+          border-radius: 2vw;
+          transition: all 0.3s ease-in-out;
+          & > .inner {
+            background-color: #0097fc1a;
+            border: 2px solid #000;
+            height: 100%;
+            width: 100%;
+            border-radius: 1.5vw;
+            padding: 1vw;
+            & > .title {
+              text-align: center;
+              font-weight: 600;
+              font-size: 1.1rem;
+            }
+            &>.close{
+              position: absolute;
+              right: 2vw;
+              top: calc(1.5vw - 8px);
+              padding: 10px;
+              &>.close-icon{
+                font-weight: 900;
+              }
+            }
+            & > .chats {
+              height: calc(100% - 80px);
+              width: 100%;
+              display: flex;
+              flex-direction: column;
+              gap: 10px;
+              & > div {
+                display: flex;
+                flex-direction: column;
+
+                & > .msg {
+                  background-color: rgba(0, 238, 255, 0.788);
+                  max-width: 70%;
+                  border-radius: 5px;
+                  padding: 5px;
+                  align-self: flex-start;
+                  &.mymsg {
+                    background-color: #a8a8a8;
+                    align-self: flex-end;
+                  }
+                }
+              }
+            }
+            & > .chatInput {
+              padding: 10px;
+              background-color: #00000027;
+              border-radius: 10px;
+              input {
+                width: calc(100% - 50px);
+                padding: 5px;
+                &:focus{
+                  outline: none;
+                }
+              }
+              .sendButton {
+                width: 50px;
+                text-align: center;
+              }
+            }
+          }
+        }
+      }
+      & > .emojiSelector {
+        position: absolute;
+        top: 1vw;
+        left: 50%;
+        transform: translateX(-50%);
+        height: 80px;
+        width: 80px;
+        & > .emoji-dropdown {
+          height: 70px;
+          width: 70px;
+          padding: 0.5vw;
+
+          .emoji-dropdown-trigger {
+            height: 100%;
+            width: 100%;
+            font-size: 200%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+          .emoji-list {
+            padding: 10px;
+            border-radius: 10px;
+            background-color: #0000008e;
+            width: 40vw;
+            transform: translateX(calc(-50% + 50px));
+            .emoji {
+              cursor: pointer;
+              margin: 2px;
+              &.selected {
+                background-color: green;
+              }
+            }
+          }
         }
       }
     }

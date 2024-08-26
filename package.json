@@ -11,14 +11,15 @@
   "dependencies": {
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
+    "@lottiefiles/dotlottie-react": "^0.8.9",
     "@mui/icons-material": "^5.16.7",
     "@mui/material": "^5.16.7",
-    "@lottiefiles/dotlottie-react": "^0.8.9",
     "axios": "^1.7.4",
     "next": "^14.2.5",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "sass": "^1.77.8",
+    "sharp": "^0.33.5",
     "socket.io-client": "^4.7.5"
   },
   "devDependencies": {

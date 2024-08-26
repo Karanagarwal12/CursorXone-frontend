@@ -45,7 +45,7 @@ function Page() {
 
   const curImg = user?.currentimage || localUserRef.current?.currentimage;
 
-  const [messages, setmessages] = useState([{ text: "enter a message gloabally", username: "admin" }, { text: "enter a message gloabally", username: "Karan_12" }]);
+  const [messages, setmessages] = useState([{ text: "oye karan is project se axios me lelenge kya ", username: "gaurav" }, { text: "tension mat le bhai, apan ko nhi lenge to kisko lenge", username: "karan" }]);
 
   const [isChatOpen, setIsChatOpen] = useState(false);
   const chatbox = useRef();

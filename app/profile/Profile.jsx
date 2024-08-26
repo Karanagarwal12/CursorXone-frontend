@@ -11,10 +11,9 @@ export default function Profile() {
     const [curUsername, setCurUsername] = useState(user?.name);
     const [isOpened, setIsOpened] = useState(false);
     const [userImages, setUserImages] = useState([]);
-
     // Update current user based on curUsername
     useEffect(() => {
-        console.log("Current Username in Effect:", curUsername);
+        // console.log("Current Username in Effect:", curUsername);
         if (curUsername && curUsername !== user?.name && joinedUserDetails) {
             const foundUser = joinedUserDetails[curUsername];
             if (foundUser) {
@@ -110,7 +109,7 @@ export default function Profile() {
                             <div className="name">{curUser.name.toUpperCase()}</div>
                             <div className="bio">{curUser.bio}</div>
                             <div className="links">
-                                {curUser.socialLinks.map((link, i) => (
+                                {JSON.parse(curUser.socialLinks).map((link, i) => (
                                     <span key={i}>
                                         <a href={link.link}>{link.text}</a>
                                     </span>

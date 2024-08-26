@@ -1,40 +1,53 @@
-.login-signup{
-    background-color: #ffffff8e;
-    display: inline-block;
-    padding: 3vw;
-    border-radius: 1vw;
-    line-height: 2vw;
-    &>h2{
-        font-size: 2vw;
-        margin-bottom: 2vw;
+.login-signup {
+  background-color: #ffffff8e;
+  display: inline-block;
+  padding: 3vw;
+  border-radius: 1vw;
+  line-height: 2vw;
+  & > h2 {
+    font-size: 2vw;
+    margin-bottom: 2vw;
+  }
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6vw;
+    div {
+      display: flex;
+      justify-content: space-between;
+      gap: 2vw;
+      position: relative;
+      .showPass {
+        position: absolute;
+        right: 0;
+      }
     }
-    form{
-        display: flex;
-        flex-direction: column;
-        gap: 0.6vw;
-        div{
-            display: flex;
-            justify-content: space-between;
-            gap: 2vw;
-            position: relative;
-            .showPass{
-                position: absolute;
-                right: 0;
-            }
-        }
-        .submitBtn{
-            background-color: #00beee;
-            border-radius: 10px;
-            margin-top: 2vw;
-        }
+    .submitBtn {
+      background-color: #00beee;
+      border-radius: 10px;
+      margin-top: 2vw;
     }
-    input{
-        background-color: transparent;
-        border-bottom: 1px solid #000;
-        border-radius: 4px;
-        &:focus{
-            outline: none;
-            // border: none;
-        }
+    textarea {
+      background-color: transparent;
+      border-bottom: 1px solid #000;
+      border-radius: 4px;
+
+      &:focus {
+        outline: none;
+      }
     }
+  }
+  input {
+    background-color: transparent;
+    border-bottom: 1px solid #000;
+    border-radius: 4px;
+    &:focus {
+      outline: none;
+      // border: none;
+    }
+  }
+  .linkss{
+    display: flex;
+    flex-direction: column;
+  }
 }

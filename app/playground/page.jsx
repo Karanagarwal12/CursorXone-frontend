@@ -66,62 +66,64 @@ function Page() {
   }, [router]);
 
   const allMouseMove = (e) => {
+    if (e.mapParent) {
 
-    let childElementMap = e.mapParent.querySelector(`#${e.username}-map`);
-    // cursors.set(e.username, e.cursorPos);
-    if (childElementMap) {
-      // If the child exists, apply the styles to it
-      childElementMap.style.top = `${((e.cursorPos.y - 40) * 8) / 100}px`;
-      childElementMap.style.left = `${((e.cursorPos.x - 17) * 8) / 100}px`;
-    } else {
-      // If the child doesn't exist, create a new element
-      childElementMap = document.createElement("img");
-      childElementMap.id = `${e.username}-map`;
-      childElementMap.className = "otherCursorMap";
-      childElementMap.src = curImg;
+      let childElementMap = e.mapParent.querySelector(`#${e.username}-map`);
+      // cursors.set(e.username, e.cursorPos);
+      if (childElementMap) {
+        // If the child exists, apply the styles to it
+        childElementMap.style.top = `${((e.cursorPos.y - 40) * 8) / 100}px`;
+        childElementMap.style.left = `${((e.cursorPos.x - 17) * 8) / 100}px`;
+      } else {
+        // If the child doesn't exist, create a new element
+        childElementMap = document.createElement("img");
+        childElementMap.id = `${e.username}-map`;
+        childElementMap.className = "otherCursorMap";
+        childElementMap.src = curImg;
 
-      // Apply the styles to the new element
-      childElementMap.style.top = `${((e.cursorPos.y - 40) * 8) / 100}px`;
-      childElementMap.style.left = `${((e.cursorPos.x - 17) * 8) / 100}px`;
+        // Apply the styles to the new element
+        childElementMap.style.top = `${((e.cursorPos.y - 40) * 8) / 100}px`;
+        childElementMap.style.left = `${((e.cursorPos.x - 17) * 8) / 100}px`;
 
-      // Append the new element to the parent element
-      e.mapParent.appendChild(childElementMap);
-    }
+        // Append the new element to the parent element
+        e.mapParent.appendChild(childElementMap);
+      }
 
-    let childElement = allMouse.current.querySelector(`#${e.username}`);
-    if (e.username == username) return;
-    if (childElement) {
+      let childElement = allMouse.current.querySelector(`#${e.username}`);
+      if (e.username == username) return;
+      if (childElement) {
 
-      // If the child exists, apply the styles to it
-      childElement.style.top = `${e.cursorPos.y - 40}px`;
-      childElement.style.left = `${e.cursorPos.x - 17}px`;
-    } else {
+        // If the child exists, apply the styles to it
+        childElement.style.top = `${e.cursorPos.y - 40}px`;
+        childElement.style.left = `${e.cursorPos.x - 17}px`;
+      } else {
 
-      // If the child doesn't exist, create a new element
-      childElement = document.createElement("div");
-      childElement.id = e.username;
-      childElement.className = "otherCursor";
-      setJoinedUsers((prev) => [...prev, e.username]);
+        // If the child doesn't exist, create a new element
+        childElement = document.createElement("div");
+        childElement.id = e.username;
+        childElement.className = "otherCursor";
+        setJoinedUsers((prev) => [...prev, e.username]);
 
-      // Apply the styles to the new element
-      childElement.style.top = `${e.cursorPos.y - 40}px`;
-      childElement.style.left = `${e.cursorPos.x - 17}px`;
+        // Apply the styles to the new element
+        childElement.style.top = `${e.cursorPos.y - 40}px`;
+        childElement.style.left = `${e.cursorPos.x - 17}px`;
 
-      // allEmojis[e.username] = null;
-      // Append the new element to the parent element
-      allMouse.current.appendChild(childElement);
-      // const emojiel = document.createElement("div");
-      // emojiel.innerHTML = "safkja"
-      // childElement.current.appendChild(emojiel);
-      // console.log(emojis[e.username]);
-      // ReactDOM.createPortal(
-      //   <EmojiDisplay
-      //     selectedEmoji={emojis[e.username]?.emoji}
-      //     ids={`${e.username}-emoji`}
-      //   />,
-      //   emojiContainer
-      // );
+        // allEmojis[e.username] = null;
+        // Append the new element to the parent element
+        allMouse.current.appendChild(childElement);
+        // const emojiel = document.createElement("div");
+        // emojiel.innerHTML = "safkja"
+        // childElement.current.appendChild(emojiel);
+        // console.log(emojis[e.username]);
+        // ReactDOM.createPortal(
+        //   <EmojiDisplay
+        //     selectedEmoji={emojis[e.username]?.emoji}
+        //     ids={`${e.username}-emoji`}
+        //   />,
+        //   emojiContainer
+        // );
 
+      }
     }
   };
 
@@ -129,8 +131,8 @@ function Page() {
   useEffect(() => {
     // const socketInstance = io('http://192.168.127.96:5000');
     // const socketInstance = io('http://103.209.145.248:3000');
-    // const socketInstance = io("http://172.70.101.255:3000");
-    const socketInstance = io("http://localhost:3000");
+    const socketInstance = io("http://172.70.101.255:3000");
+    // const socketInstance = io("http://localhost:3000");
     // const socketInstance = io("http://192.168.112.96:3000");
     // const socketInstance = io('http://192.168.18.96:5000');
     // const socketInstance = io('http://172.70.100.243:5000');
@@ -143,13 +145,13 @@ function Page() {
     });
 
     socketInstance.on("user-left", (username) => {
-      console.log(`${username} left the room`);
+      // console.log(`${username} left the room`);
       setClients((prev) => prev.filter((user) => user !== username));
       // setCursorPositions(prevPositions => prevPositions.filter(item => item.username !== username));
       socketInstance.emit("connected-users", clients);
     });
     socketInstance.on("user-joined", (username) => {
-      console.log(`${username} joined the room`);
+      // console.log(`${username} joined the room`);
       // setClients(prev => prev.filter(user => user !== username));
       // setCursorPositions(prevPositions => prevPositions.filter(item => item.username !== username));
       socketInstance.emit("connected-users", clients);
@@ -161,20 +163,20 @@ function Page() {
     });
     socketInstance.on("messageResponse", ({ text, username }) => {
       setmessages([...messages, { text, username }]);
-      console.log("message by ", username);
-      console.log(text);
+      // console.log("message by ", username);
+      // console.log(text);
     })
 
     socketInstance.on("emoji-changed", (emoji) => {
-      console.log(emoji.username);
+      // console.log(emoji.username);
       if (allMouse.current) {
         let childElement = allMouse.current.querySelector(`#${emoji.username}`);
-        console.log(childElement);
+        // console.log(childElement);
 
         if (childElement) {
           // Check if the emoji element already exists
           const existingEmojii = childElement.querySelector(`.emojii-${emoji.username}`);
-          console.log(existingEmojii);
+          // console.log(existingEmojii);
 
           if (!existingEmojii) {
             // Create a new div for the emoji
@@ -196,9 +198,9 @@ function Page() {
           } else {
             // If needed, handle the case where the element already exists
             // e.g., update or refresh the existing component
-            console.log('Emoji already exists');
+            // console.log('Emoji already exists');
             existingEmojii.remove();
-            console.log('Emoji removed');
+            // console.log('Emoji removed');
 
             const emojiel = document.createElement('div');
             emojiel.className = `emojii-${emoji.username}`;
@@ -226,12 +228,12 @@ function Page() {
 
     socketInstance.on("connected-users-table", (table) => {
       setTable(table);
-      console.log(table);
+      // console.log(table);
       if (table.hasOwnProperty("1")) {
         let lengthOfArray1 = table["1"].length;
-        console.log(lengthOfArray1);
+        // console.log(lengthOfArray1);
       } else {
-        console.log("Key '1' does not exist.");
+        // console.log("Key '1' does not exist.");
       }
     });
 
@@ -307,7 +309,7 @@ function Page() {
   }
 
   const handleJoinTable = (tableId) => {
-    console.log(curTable);
+    // console.log(curTable);
     if (curTable != -1) {
       // handleLeaveTable(curTable);
       setCurTable(tableId);
@@ -323,10 +325,10 @@ function Page() {
     }
   };
   const handletableclick = (tableId) => {
-    console.log("clicked table ", tableId);
+    // console.log("clicked table ", tableId);
 
     socket.emit("join-table", { tableId, username });
-    console.log("joining table")
+    // console.log("joining table")
     navigator.mediaDevices
       .getUserMedia({ audio: true, video: false })
       .then((stream) => {
@@ -335,7 +337,7 @@ function Page() {
         var audioChunks = [];
 
         madiaRecorder.addEventListener("dataavailable", function (event) {
-          console.log("data ", pushToTalkRef.current);
+          // console.log("data ", pushToTalkRef.current);
           if (pushToTalkRef.current) {
             audioChunks.push(event.data);
           }
@@ -350,9 +352,9 @@ function Page() {
           fileReader.onloadend = function () {
             var base64String = fileReader.result;
             if (pushToTalkRef.current) {
-              console.log("emitung");
+              // console.log("emitung");
               socket.emit("audioStream", { base64String, tableId, username });
-              console.log("emited")
+              // console.log("emited")
             }
           };
 
@@ -370,22 +372,22 @@ function Page() {
         console.error("Error capturing audio.", error);
       });
     socket.on("audioStream", (audioData) => {
-      console.log("tab", audioData.tableId);
-      console.log(audioData.base64String);
-      console.log(audioData.username);
-      console.log(audioData);
+      // console.log("tab", audioData.tableId);
+      // console.log(audioData.base64String);
+      // console.log(audioData.username);
+      // console.log(audioData);
 
       if (audioData.username == username) {
         return;
       }
       audioData = audioData.base64String;
       var newData = audioData.split(";");
-      console.log(newData);
+      // console.log(newData);
       newData[0] = "data:audio/ogg;";
       newData = newData[0] + newData[1];
 
       var audio = new Audio(newData);
-      console.log(audio);
+      // console.log(audio);
       if (!audio || document.hidden || audio.src == "data:audio/ogg;base64,") {
         return;
       }
@@ -395,16 +397,16 @@ function Page() {
 
   };
   const handlegloabalMessage = (e) => {
-    console.log("sending message");
+    // console.log("sending message");
     socket.emit('message-global', { text: e.msg, username: e.name });
   }
   const handleLeaveTable = (tableId) => {
-    console.log("leaving table ", tableId);
+    // console.log("leaving table ", tableId);
     socket.emit("leave-table", { tableId, username });
   };
 
   const handleEmoji = (e) => {
-    console.log(e);
+    // console.log(e);
     socket.emit('emoji', { emojiText: e.text, username: e.username });
   }
   const handleEmojiSelect = (unicodeValue) => {
@@ -530,7 +532,7 @@ function Page() {
                   handleEmojiSelect={handleEmojiSelect}
                 />
               </div>
-              <button onClick={() => { setpushToTalk(!pushToTalk); console.log(pushToTalk) }} className="pushTalk navBtn">{!pushToTalk && <MicOffIcon className="mic inn" /> || <MicIcon className="mic inn" />}</button>
+              <button onClick={() => { setpushToTalk(!pushToTalk); }} className="pushTalk navBtn">{!pushToTalk && <MicOffIcon className="mic inn" /> || <MicIcon className="mic inn" />}</button>
               <div className="mapCover">
                 <Mapp />
               </div>

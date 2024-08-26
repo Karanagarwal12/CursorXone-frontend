@@ -23,6 +23,8 @@ export default function Home() {
   const [isLogin, setIsLogin] = useState(true); // Toggle between login and signup
   const [image, setImage] = useState(null);
   const [imageError, setImageError] = useState(null);
+  const [bio, setBio] = useState(''); // State for bio
+  const [socialLinks, setSocialLinks] = useState([{ text: '', link: '' }]); // State for social links
 
   const defaultImages = [defaultImage1];
 
@@ -55,11 +57,14 @@ export default function Home() {
     }
 
     try {
-      const response = await axios.post('http://103.209.145.248:3000/users/auth/signup', {
+      const response = await axios.post('http://172.70.101.255:3000/users/auth/signup', {
+        // const response = await axios.post('http://103.209.145.248:3000/users/auth/signup', {
         name,
         email,
         password,
         image,
+        bio,
+        socialLinks:JSON.stringify(socialLinks),
       });
 
       alert('User signed up successfully');
@@ -74,7 +79,8 @@ export default function Home() {
     setError(null);
 
     try {
-      const response = await axios.post('http://103.209.145.248:3000/users/auth/login', {
+      const response = await axios.post('http://172.70.101.255:3000/users/auth/login', {
+        // const response = await axios.post('http://103.209.145.248:3000/users/auth/login', {
         email,
         password,
       });
@@ -86,6 +92,7 @@ export default function Home() {
       setError(err.response?.data?.message || 'An error occurred');
     }
   };
+
   useEffect(() => {
     let localUser = localStorage.getItem('userD');
     if (localUser) {
@@ -103,21 +110,75 @@ export default function Home() {
     });
   };
 
+  const handleSocialLinkChange = (index, key, value) => {
+    const updatedLinks = socialLinks.map((link, i) =>
+      i === index ? { ...link, [key]: value } : link
+    );
+    setSocialLinks(updatedLinks);
+  };
+
+  const addSocialLink = () => {
+    setSocialLinks([...socialLinks, { text: '', link: '' }]);
+  };
+
+  const removeSocialLink = (index) => {
+    setSocialLinks(socialLinks.filter((_, i) => i !== index));
+  };
+
   return (
     <div className="login-signup">
       <h2>{isLogin ? 'Login' : 'Signup'}</h2>
       <form onSubmit={isLogin ? handleLogin : handleSignup}>
         {!isLogin && (
-          <div>
-            <label htmlFor="name">Username</label>
-            <input
-              type="text"
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
-          </div>
+          <>
+            <div>
+              <label htmlFor="name">Username</label>
+              <input
+                type="text"
+                id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="bio">Bio</label>
+              <textarea
+                id="bio"
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
+                placeholder="Tell us about yourself"
+              />
+            </div>
+            <div>
+              <label>Social Links</label>
+              <div className="linkss">
+                {socialLinks.map((link, index) => (
+                  <div key={index} style={{ display: 'flex', gap: '10px', marginBottom: '8px' }}>
+                    <input
+                      type="text"
+                      placeholder="Link text"
+                      value={link.text}
+                      onChange={(e) => handleSocialLinkChange(index, 'text', e.target.value)}
+                    />
+                    <input
+                      type="url"
+                      placeholder="Link URL"
+                      value={link.link}
+                      onChange={(e) => handleSocialLinkChange(index, 'link', e.target.value)}
+                      required
+                    />
+                    <button type="button" onClick={() => removeSocialLink(index)}>
+                      Remove
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <button type="button" onClick={addSocialLink}>
+                Add Social Link
+              </button>
+            </div>
+          </>
         )}
         <div>
           <label htmlFor="email">Email</label>

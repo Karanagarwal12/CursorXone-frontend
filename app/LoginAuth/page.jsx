@@ -6,11 +6,10 @@ import { useUserContext } from '../context/UserContext';
 import axios from 'axios';
 import './login.scss';
 
-// Importing images from the assets folder
 import defaultImage1 from '../../assets/cursor01.png';
+import defaultImage2 from '../../assets/cursor03.png';
+import defaultImage3 from '../../assets/cursor04.png';
 // Add more images if needed
-// import defaultImage2 from '../public/assets/default2.png';
-// import defaultImage3 from '../public/assets/default3.png';
 
 export default function Home() {
   const router = useRouter();
@@ -18,33 +17,40 @@ export default function Home() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(null);
-  const [isLogin, setIsLogin] = useState(true); // Toggle between login and signup
+  const [isLogin, setIsLogin] = useState(true);
   const [image, setImage] = useState(null);
   const [imageError, setImageError] = useState(null);
-  const [bio, setBio] = useState(''); // State for bio
-  const [socialLinks, setSocialLinks] = useState([{ text: '', link: '' }]); // State for social links
+  const [bio, setBio] = useState('');
+  const [socialLinks, setSocialLinks] = useState([{ text: '', link: '' }]);
+  const [selectedImagePath, setSelectedImagePath] = useState(null); // State for tracking selected image
 
-  const defaultImages = [defaultImage1];
+  const defaultImages = [defaultImage1, defaultImage2, defaultImage3];
 
   const handleImageChange = (e) => {
-    // Convert the selected file to base64 and set it in the state
-    convertToBase64(e.target.files[0]).then(base64 => {
-      setImage(base64);
-      setImageError(null);
-    }).catch(() => {
-      setImageError('Failed to convert image to base64');
-    });
+    convertToBase64(e.target.files[0])
+      .then((base64) => {
+        setImage(base64);
+        setSelectedImagePath(null); // Clear selected image when a custom image is uploaded
+        setImageError(null);
+      })
+      .catch(() => {
+        setImageError('Failed to convert image to base64');
+      });
   };
 
   const handleDefaultImageSelect = async (imagePath) => {
-    // Convert default image to base64
-    const base64Image = await fetch(imagePath)
-      .then((res) => res.blob())
-      .then((blob) => convertToBase64(blob));
-    setImage(base64Image);
-    setImageError(null);
+    try {
+      const response = await fetch(imagePath);
+      const blob = await response.blob();
+      const base64Image = await convertToBase64(blob);
+      setImage(base64Image);
+      setSelectedImagePath(imagePath); // Set the selected image path
+      setImageError(null);
+    } catch (error) {
+      setImageError('Failed to select image');
+    }
   };
 
   const handleSignup = async (e) => {
@@ -58,13 +64,12 @@ export default function Home() {
 
     try {
       const response = await axios.post('http://192.168.112.96:3000/users/auth/signup', {
-        // const response = await axios.post('http://103.209.145.248:3000/users/auth/signup', {
         name,
         email,
         password,
         image,
         bio,
-        socialLinks:JSON.stringify(socialLinks),
+        socialLinks: JSON.stringify(socialLinks),
       });
 
       alert('User signed up successfully');
@@ -80,12 +85,10 @@ export default function Home() {
 
     try {
       const response = await axios.post('http://192.168.112.96:3000/users/auth/login', {
-        // const response = await axios.post('http://103.209.145.248:3000/users/auth/login', {
         email,
         password,
       });
       const userDetails = response.data.body;
-      // console.log(response.data.body);
       setUser(userDetails);
       router.push('/playground');
     } catch (err) {
@@ -99,7 +102,7 @@ export default function Home() {
       localUser = JSON.parse(localUser);
       router.push('/playground');
     }
-  }, [router]); // Only include router as a dependency
+  }, [router]);
 
   const convertToBase64 = (file) => {
     return new Promise((resolve, reject) => {
@@ -204,13 +207,15 @@ export default function Home() {
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               style={{ marginLeft: '8px' }}
-              className='showPass'
+              className="showPass"
             >
               {showPassword ? 'Hide' : 'Show'}
             </button>
           </div>
         </div>
-        <button type="submit" className='submitBtn'>{isLogin ? 'Login' : 'Signup'}</button>
+        <button type="submit" className="submitBtn">
+          {isLogin ? 'Login' : 'Signup'}
+        </button>
         {!isLogin && (
           <div>
             <div>
@@ -219,13 +224,13 @@ export default function Home() {
                 {defaultImages.map((img, index) => (
                   <img
                     key={index}
-                    src={img.src} // Use the src of imported images
+                    src={img.src}
                     alt={`Default ${index + 1}`}
                     style={{
                       width: '100px',
                       height: '100px',
                       cursor: 'pointer',
-                      border: image === img.src ? '2px solid blue' : '1px solid gray',
+                      border: selectedImagePath === img.src ? '2px solid blue' : '1px solid gray',
                     }}
                     onClick={() => handleDefaultImageSelect(img.src)}
                   />
@@ -234,11 +239,7 @@ export default function Home() {
             </div>
 
             <p>Or upload your own image:</p>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-            />
+            <input type="file" accept="image/*" onChange={handleImageChange} />
 
             {imageError && <p style={{ color: 'red' }}>{imageError}</p>}
           </div>

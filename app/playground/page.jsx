@@ -193,8 +193,10 @@ function Page() {
             childElement.appendChild(emojiel);
             setTimeout(() => {
               const existingEmojii = childElement.querySelector(`.emojii-${emoji.username}`);
-              existingEmojii.remove();
-            }, 5000);
+              if (existingEmojii) {
+                existingEmojii?.remove();
+              }
+            }, 7000);
           } else {
             // If needed, handle the case where the element already exists
             // e.g., update or refresh the existing component
@@ -216,8 +218,10 @@ function Page() {
 
             setTimeout(() => {
               const existingEmojii = childElement.querySelector(`.emojii-${emoji.username}`);
-              existingEmojii.remove();
-            }, 5000);
+              if (existingEmojii) {
+                existingEmojii?.remove();
+              }
+            }, 7000);
 
           }
         }

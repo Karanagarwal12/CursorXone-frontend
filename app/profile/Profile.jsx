@@ -109,12 +109,22 @@ export default function Profile() {
                             <div className="name">{curUser.name.toUpperCase()}</div>
                             <div className="bio">{curUser.bio}</div>
                             <div className="links">
-                                {JSON.parse(curUser.socialLinks).map((link, i) => (
-                                    <span key={i}>
-                                        <a href={link.link}>{link.text}</a>
-                                    </span>
-                                ))}
+                                {curUser?.socialLinks && (
+                                    (() => {
+                                        try {
+                                            const links = JSON.parse(curUser.socialLinks);
+                                            return links.map((link, i) => (
+                                                <span key={i}>
+                                                    <a href={link.link}>{link.text}</a>
+                                                </span>
+                                            ));
+                                        } catch (error) {
+                                            return null;
+                                        }
+                                    })()
+                                )}
                             </div>
+
                             <div>
                                 {userImages.length > 0 && userImages.map((image, index) => (
                                     <img

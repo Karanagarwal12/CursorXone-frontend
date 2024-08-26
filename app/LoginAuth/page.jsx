@@ -57,7 +57,7 @@ export default function Home() {
     }
 
     try {
-      const response = await axios.post('http://172.70.101.255:3000/users/auth/signup', {
+      const response = await axios.post('http://192.168.112.96:3000/users/auth/signup', {
         // const response = await axios.post('http://103.209.145.248:3000/users/auth/signup', {
         name,
         email,
@@ -79,7 +79,7 @@ export default function Home() {
     setError(null);
 
     try {
-      const response = await axios.post('http://172.70.101.255:3000/users/auth/login', {
+      const response = await axios.post('http://192.168.112.96:3000/users/auth/login', {
         // const response = await axios.post('http://103.209.145.248:3000/users/auth/login', {
         email,
         password,

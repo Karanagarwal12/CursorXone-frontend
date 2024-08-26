@@ -128,9 +128,9 @@ function Page() {
 
   useEffect(() => {
     // const socketInstance = io('http://192.168.127.96:5000');
-    const socketInstance = io('http://103.209.145.248:3000');
+    // const socketInstance = io('http://103.209.145.248:3000');
     // const socketInstance = io("http://172.70.101.255:3000");
-    // const socketInstance = io("http://localhost:3000");
+    const socketInstance = io("http://localhost:3000");
     // const socketInstance = io("http://192.168.112.96:3000");
     // const socketInstance = io('http://192.168.18.96:5000');
     // const socketInstance = io('http://172.70.100.243:5000');
@@ -189,6 +189,10 @@ function Page() {
 
             // Append the new div to the target element
             childElement.appendChild(emojiel);
+            setTimeout(() => {
+              const existingEmojii = childElement.querySelector(`.emojii-${emoji.username}`);
+              existingEmojii.remove();
+            }, 5000);
           } else {
             // If needed, handle the case where the element already exists
             // e.g., update or refresh the existing component
@@ -207,6 +211,11 @@ function Page() {
 
             // Append the new div to the target element
             childElement.appendChild(emojiel);
+
+            setTimeout(() => {
+              const existingEmojii = childElement.querySelector(`.emojii-${emoji.username}`);
+              existingEmojii.remove();
+            }, 5000);
 
           }
         }

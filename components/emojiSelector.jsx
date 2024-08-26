@@ -1116,7 +1116,7 @@ const EmojiDisplay = ({ selectedEmoji  }) => {
     <div className="selected-emoji" >
       {selectedEmoji && (
         <div key={selectedEmoji}>
-          <h1>{selectedEmoji}</h1>
+          {/* <h1>{selectedEmoji}</h1> */}
           <DotLottieReact
             src={`https://fonts.gstatic.com/s/e/notoemoji/latest/${selectedEmoji}/lottie.json`}
             loop

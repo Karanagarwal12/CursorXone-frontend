@@ -17,6 +17,9 @@
       background: url("../../assets/cursor01.png") no-repeat;
       background-size: contain;
       pointer-events: all;
+      .selected-emoji{
+        transform: translate(30px,-25px);
+      }
     }
     .table {
       pointer-events: all;
